@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Riya Dresses &mdash; Premium designer boutique featuring exquisite handcrafted dresses, sarees, lehengas, and couture for the modern woman. Shop exclusive collections.">
+  <meta name="keywords" content="Riya Dresses, designer boutique, luxury fashion, sarees, lehengas, couture, bridal wear, premium dresses">
+  <title>RIYA DRESSES &mdash; Premium Designer Boutique</title>
+  <link rel="stylesheet" href="index.css?v=4">
+  <!-- Favicon / Website Icon -->
+  <link rel="icon" type="image/svg+xml" href="assets/only RD transparent bg.svg">
+  <link rel="icon" type="image/png" href="assets/logo-icon.png">
+  <link rel="apple-touch-icon" href="assets/logo-icon.png">
+  <!-- Preconnect for Google Fonts performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+
+  <!-- ===== TOP BANNER / TICKER ===== -->
+  <div class="top-banner" id="top-banner">
+    <div class="top-banner__inner">
+      <span class="top-banner__text" id="top-banner-label">Exhibition &amp; New Arrival Alerts</span>
+      <span class="top-banner__text" style="opacity: 0.4;">&#x2726;</span>
+      <span class="top-banner__text" id="top-banner-headline">Next Exhibition Drop &mdash; Countdown Initiated</span>
+      <span class="top-banner__text" style="opacity: 0.4;">&#x2726;</span>
+      <div class="top-banner__countdown" id="countdown">
+        <div class="countdown__segment">
+          <span class="countdown__number" id="countdown-days">00</span>
+          <span class="countdown__label">Days</span>
+        </div>
+        <span class="countdown__separator">:</span>
+        <div class="countdown__segment">
+          <span class="countdown__number" id="countdown-hours">00</span>
+          <span class="countdown__label">Hrs</span>
+        </div>
+        <span class="countdown__separator">:</span>
+        <div class="countdown__segment">
+          <span class="countdown__number" id="countdown-mins">00</span>
+          <span class="countdown__label">Min</span>
+        </div>
+        <span class="countdown__separator">:</span>
+        <div class="countdown__segment">
+          <span class="countdown__number" id="countdown-secs">00</span>
+          <span class="countdown__label">Sec</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HEADER / NAVIGATION ===== -->
+  <header class="header" id="header">
+    <div class="header__inner">
+
+      <div class="header__left">
+        <a href="#" class="header__logo" id="logo-link" aria-label="Riya Dresses Home">
+          <img src="assets/only RD transparent bg.svg" alt="Riya Dresses">
+        </a>
+
+        <nav class="header__nav" id="main-nav" aria-label="Main navigation">
+          <a href="#products" class="header__nav-link" id="nav-new-arrivals">New Arrivals</a>
+          <a href="#products" class="header__nav-link" id="nav-collections">Collections</a>
+          <a href="#about" class="header__nav-link" id="nav-about">About</a>
+          <a href="#brand-story" class="header__nav-link" id="nav-atelier">The Atelier</a>
+          <a href="#footer" class="header__nav-link" id="nav-contact">Contact</a>
+        </nav>
+      </div>
+
+      <div class="header__right">
+        <!-- Search Icon -->
+        <button class="header__icon-btn" id="search-btn" aria-label="Search">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+          </svg>
+        </button>
+        <!-- Wishlist Icon -->
+        <button class="header__icon-btn" id="wishlist-btn" aria-label="Wishlist">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
+          </svg>
+          <span class="header__badge" id="wishlist-count" style="display: none;">0</span>
+        </button>
+        <!-- Bag Icon -->
+        <button class="header__icon-btn" id="bag-btn" aria-label="Shopping Bag">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+          </svg>
+          <span class="header__badge" id="bag-count" style="display: none;">0</span>
+        </button>
+
+        <!-- Hamburger (Mobile) -->
+        <div class="header__hamburger" id="hamburger-btn" role="button" tabindex="0" aria-label="Open menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ===== MOBILE DRAWER ===== -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <div class="mobile-drawer__overlay" id="drawer-overlay"></div>
+    <div class="mobile-drawer__panel">
+      <button class="mobile-drawer__close" id="drawer-close" aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      <nav class="mobile-drawer__nav" aria-label="Mobile navigation">
+        <a href="#products" class="mobile-drawer__link" id="mobile-nav-arrivals">New Arrivals</a>
+        <a href="#products" class="mobile-drawer__link" id="mobile-nav-collections">Collections</a>
+        <a href="#about" class="mobile-drawer__link" id="mobile-nav-about">About</a>
+        <a href="#brand-story" class="mobile-drawer__link" id="mobile-nav-atelier">The Atelier</a>
+        <a href="#footer" class="mobile-drawer__link" id="mobile-nav-contact">Contact</a>
+        <a href="#" class="mobile-drawer__link" id="mobile-nav-whatsapp">Inquire via WhatsApp</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ===== HERO CATEGORIES (5-Tile Array) ===== -->
+  <section class="hero-categories" id="hero-spotlight">
+    <div class="category-tiles-grid" id="category-tiles-container">
+      <a href="#products" class="cat-tile cat-large">
+        <img src="assets/hero-1.webp" alt="Noir Elegance" loading="eager">
+        <div class="cat-tile-overlay"></div>
+        <h2 class="cat-title">Noir Elegance</h2>
+      </a>
+      <a href="#products" class="cat-tile">
+        <img src="assets/hero-2.webp" alt="Ivory Whisper" loading="lazy">
+        <div class="cat-tile-overlay"></div>
+        <h2 class="cat-title">Ivory Whisper</h2>
+      </a>
+      <a href="#products" class="cat-tile">
+        <img src="assets/hero-3.webp" alt="Burgundy Regalia" loading="lazy">
+        <div class="cat-tile-overlay"></div>
+        <h2 class="cat-title">Burgundy Regalia</h2>
+      </a>
+      <a href="#products" class="cat-tile">
+        <img src="assets/hero-4.webp" alt="Blush Reverie" loading="lazy">
+        <div class="cat-tile-overlay"></div>
+        <h2 class="cat-title">Blush Reverie</h2>
+      </a>
+      <a href="#products" class="cat-tile">
+        <img src="assets/product-1.webp" alt="Midnight Silhouette" loading="lazy">
+        <div class="cat-tile-overlay"></div>
+        <h2 class="cat-title">Midnight Silhouette</h2>
+      </a>
+    </div>
+  </section>
+
+
+
+  <!-- ===== PRODUCT COLLECTION GRID ===== -->
+  <section class="products" id="products">
+    <div class="products__header reveal">
+      <span class="products__label">Exclusive Pieces</span>
+      <h2 class="products__title">Shop the Edit</h2>
+      <div class="products__filters" id="category-filters">
+        <button class="products__filter-btn is-active" data-filter="all" id="filter-all">All</button>
+        <button class="products__filter-btn" data-filter="new-arrivals" id="filter-new-arrivals">New Arrivals</button>
+        <button class="products__filter-btn" data-filter="saree" id="filter-saree">Sarees</button>
+        <button class="products__filter-btn" data-filter="lehenga" id="filter-lehenga">Lehengas</button>
+        <button class="products__filter-btn" data-filter="dress" id="filter-dress">Dresses</button>
+        <button class="products__filter-btn" data-filter="kurti" id="filter-kurti">Kurtis</button>
+        <button class="products__filter-btn" data-filter="gown" id="filter-gown">Gowns</button>
+        <button class="products__filter-btn" data-filter="top" id="filter-top">Tops</button>
+        <button class="products__filter-btn" data-filter="jeans" id="filter-jeans">Jeans</button>
+      </div>
+    </div>
+
+    <div class="products__grid reveal-stagger" id="products-grid">
+
+      <!-- Product 1 -->
+      <div class="product-card" id="product-card-1" data-category="dress" data-new-arrival="true" data-stock-count="2">
+        <div class="product-card__image-wrapper">
+          <img class="product-card__image" src="assets/product-1.webp" alt="Midnight Silhouette Dress" loading="lazy">
+          <span class="product-card__badge product-card__badge--new" style="left: 10px;">New</span>
+          <div class="product-card__overlay">
+            <a href="#" class="product-card__quick-action whatsapp-cta" data-product="Midnight Silhouette Dress &mdash; &#x20B9;28,500" id="cta-product-1">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+              </svg>
+              Inquire via WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="product-card__info">
+          <span class="product-card__name">Midnight Silhouette Dress</span>
+          <span class="product-card__price">&#x20B9;28,500</span>
+          <span class="product-card__category">Evening Wear</span>
+        </div>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="product-card" id="product-card-2" data-category="saree" data-stock-count="8">
+        <div class="product-card__image-wrapper">
+          <img class="product-card__image" src="assets/product-2.webp" alt="Royal Sapphire Saree" loading="lazy">
+          <div class="product-card__overlay">
+            <a href="#" class="product-card__quick-action whatsapp-cta" data-product="Royal Sapphire Saree &mdash; &#x20B9;42,000" id="cta-product-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+              </svg>
+              Inquire via WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="product-card__info">
+          <span class="product-card__name">Royal Sapphire Saree</span>
+          <span class="product-card__price">&#x20B9;42,000</span>
+          <span class="product-card__category">Festive Saree</span>
+        </div>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="product-card" id="product-card-3" data-category="lehenga" data-stock-count="3">
+        <div class="product-card__image-wrapper">
+          <img class="product-card__image" src="assets/product-3.webp" alt="Champagne Aura Lehenga" loading="lazy">
+          <div class="product-card__overlay">
+            <a href="#" class="product-card__quick-action whatsapp-cta" data-product="Champagne Aura Lehenga &mdash; &#x20B9;65,000" id="cta-product-3">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+              </svg>
+              Inquire via WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="product-card__info">
+          <span class="product-card__name">Champagne Aura Lehenga</span>
+          <span class="product-card__price">&#x20B9;65,000</span>
+          <span class="product-card__category">Bridal Couture</span>
+        </div>
+      </div>
+
+      <!-- Product 4 -->
+      <div class="product-card product-card--out-of-stock" id="product-card-4" data-category="gown" data-stock-count="0">
+        <div class="product-card__image-wrapper">
+          <img class="product-card__image" src="assets/product-4.webp" alt="Emerald Empress Gown" loading="lazy">
+          <div class="product-card__overlay">
+            <a href="#" class="product-card__quick-action whatsapp-cta" data-product="Emerald Empress Gown &mdash; &#x20B9;38,000" id="cta-product-4">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+              </svg>
+              Inquire via WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="product-card__info">
+          <span class="product-card__name">Emerald Empress Gown</span>
+          <span class="product-card__price">&#x20B9;38,000</span>
+          <span class="product-card__category">Evening Wear</span>
+        </div>
+      </div>
+
+      <!-- Product 5 -->
+      <div class="product-card" id="product-card-5" data-category="kurti" data-stock-count="15">
+        <div class="product-card__image-wrapper">
+          <img class="product-card__image" src="assets/product-5.webp" alt="Blush Petal Anarkali" loading="lazy">
+          <div class="product-card__overlay">
+            <a href="#" class="product-card__quick-action whatsapp-cta" data-product="Blush Petal Anarkali &mdash; &#x20B9;34,000" id="cta-product-5">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+              </svg>
+              Inquire via WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="product-card__info">
+          <span class="product-card__name">Blush Petal Anarkali</span>
+          <span class="product-card__price">&#x20B9;34,000</span>
+          <span class="product-card__category">Festive Wear</span>
+        </div>
+      </div>
+
+      <!-- Product 6 -->
+      <div class="product-card" id="product-card-6" data-category="lehenga" data-stock-count="1">
+        <div class="product-card__image-wrapper">
+          <img class="product-card__image" src="assets/product-6.webp" alt="Ivory Heirloom Bridal Lehenga" loading="lazy">
+          <div class="product-card__overlay">
+            <a href="#" class="product-card__quick-action whatsapp-cta" data-product="Ivory Heirloom Bridal Lehenga &mdash; &#x20B9;1,25,000" id="cta-product-6">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+              </svg>
+              Inquire via WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="product-card__info">
+          <span class="product-card__name">Ivory Heirloom Bridal Lehenga</span>
+          <span class="product-card__price">&#x20B9;1,25,000</span>
+          <span class="product-card__category">Bridal Couture</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== BRAND STORY / EDITORIAL ===== -->
+  <section class="brand-story" id="brand-story">
+    <div class="brand-story__image-side">
+      <img class="brand-story__image" src="assets/owner-portrait.webp" alt="Riya Dresses Founder &mdash; Curator of Elegance" loading="lazy">
+    </div>
+    <div class="brand-story__content-side">
+      <div class="reveal">
+        <span class="brand-story__label">The Atelier</span>
+        <h2 class="brand-story__title" id="atelier-title-display">Hand-Selected Elegance,<br>Curated with Vision.</h2>
+        <p class="brand-story__text" id="atelier-p1-display">
+          At Riya Dresses, we believe that true style lies in the art of selection. We travel, discover, and partner with premium brands and trusted heritage resellers across the region to bring you a deeply personal, elite collection under one roof. Every single piece is individually vetted for its fabric quality, tailoring precision, and distinct silhouette.
+        </p>
+        <p class="brand-story__text" id="atelier-p2-display">
+          We save our clients the endless search by doing the curation for you&mdash;sourcing exceptional festive sets, timeless sarees, and modern dresses that balance high-fashion trends with premium comfort. You aren't just buying a dress; you are experiencing a collection edited to perfection.
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CLIENT TESTIMONIALS & GOOGLE REVIEW ===== -->
+  <section class="google-review" id="google-review">
+    <div class="container reveal">
+      <div class="google-review__grid">
+        
+        <!-- Left Column: Testimonial Carousel -->
+        <div class="google-review__carousel-section">
+          <span class="google-review__label">Client Testimonials</span>
+          <div class="testimonials-slider">
+            <div class="testimonials-track" id="testimonials-track">
+              <!-- Dynamic testimonial slides render here -->
+              <div class="testimonial-slide active">
+                <div class="testimonial-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div>
+                <p class="testimonial-text">"Absolutely stunning lehenga! The fit was perfect and the hand embroidery is extremely intricate. Highly recommend Riya Dresses for wedding shopping."</p>
+                <span class="testimonial-author">&mdash; Ananya Iyer</span>
+              </div>
+            </div>
+            
+            <!-- Testimonials Navigation -->
+            <div class="testimonials-nav">
+              <button class="testimonials-nav-btn" id="testimonial-prev" aria-label="Previous review">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+                </svg>
+              </button>
+              <button class="testimonials-nav-btn" id="testimonial-next" aria-label="Next review">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Column: Write a Review CTA -->
+        <div class="google-review__cta-section">
+          <div class="google-review__stars">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <span class="google-review__label">Your Experience Matters</span>
+          <h2 class="google-review__title">Review Us on Google</h2>
+          <p class="google-review__desc">
+            Loved your Riya Dresses experience? Share your thoughts and help other fashion enthusiasts discover our collections. Your review means the world to us.
+          </p>
+          <a href="https://g.page/r/YOUR_GOOGLE_REVIEW_LINK/review" target="_blank" rel="noopener noreferrer" class="google-review__cta" id="google-review-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18" style="stroke-width:1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+            </svg>
+            Write a Review
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== INSTAGRAM REELS SECTION ===== -->
+  <section class="instagram-reels" id="instagram-reels">
+    <div class="container">
+      <div class="reels__inner reveal">
+        <div class="reels__header">
+          <div class="reels__header-left">
+            <span class="reels__label">On The Gram</span>
+            <h2 class="reels__title">Atelier Reels</h2>
+          </div>
+          <a href="https://www.instagram.com/riya__dresses/" target="_blank" rel="noopener noreferrer" class="reels__follow-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Follow @riya__dresses
+          </a>
+        </div>
+
+        <div class="reels__grid">
+          <!-- Instagram embeds will be dynamically loaded from Firebase -->
+          <div class="reels__placeholder" id="reels-placeholder">
+            <p>Loading reels from Instagram...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EXHIBITIONS GALLERY SECTION ===== -->
+  <section class="exhibitions" id="exhibitions">
+    <div class="container">
+      <div class="exhibitions__inner reveal">
+        <div class="exhibitions__header">
+          <span class="exhibitions__label">Our Journey</span>
+          <h2 class="exhibitions__title">Exhibition Highlights</h2>
+          <p class="exhibitions__subtitle">Glimpses of our curated showcases, bridal trunk shows, and couture previews across major cities.</p>
+        </div>
+        <div class="exhibitions__grid">
+          <!-- Exhibition 1 -->
+          <div class="exhibition-card exhibition-card--large" data-loc="New Delhi" data-title="Bridal Couture Trunk Show" data-year="2025" data-img="assets/exhibition-1.webp">
+            <div class="exhibition-card__image-wrapper">
+              <img class="exhibition-card__image" src="assets/exhibition-1.webp" alt="Bridal Couture Trunk Show &mdash; Delhi" loading="lazy">
+              <div class="exhibition-card__overlay">
+                <span class="exhibition-card__location">New Delhi</span>
+                <h3 class="exhibition-card__name">Bridal Couture Trunk Show</h3>
+                <span class="exhibition-card__year">2025</span>
+              </div>
+            </div>
+          </div>
+          <!-- Exhibition 2 -->
+          <div class="exhibition-card" data-loc="Mumbai" data-title="Heritage Weaves" data-year="2025" data-img="assets/exhibition-2.webp">
+            <div class="exhibition-card__image-wrapper">
+              <img class="exhibition-card__image" src="assets/exhibition-2.webp" alt="Heritage Weaves Exhibition &mdash; Mumbai" loading="lazy">
+              <div class="exhibition-card__overlay">
+                <span class="exhibition-card__location">Mumbai</span>
+                <h3 class="exhibition-card__name">Heritage Weaves</h3>
+                <span class="exhibition-card__year">2025</span>
+              </div>
+            </div>
+          </div>
+          <!-- Exhibition 3 -->
+          <div class="exhibition-card" data-loc="Bangalore" data-title="Luxe Atelier Launch" data-year="2024" data-img="assets/exhibition-3.webp">
+            <div class="exhibition-card__image-wrapper">
+              <img class="exhibition-card__image" src="assets/exhibition-3.webp" alt="Luxe Atelier Launch &mdash; Bangalore" loading="lazy">
+              <div class="exhibition-card__overlay">
+                <span class="exhibition-card__location">Bangalore</span>
+                <h3 class="exhibition-card__name">Luxe Atelier Launch</h3>
+                <span class="exhibition-card__year">2024</span>
+              </div>
+            </div>
+          </div>
+          <!-- Exhibition 4 -->
+          <div class="exhibition-card exhibition-card--wide" data-loc="Hyderabad" data-title="The Festive Edit" data-year="2024" data-img="assets/exhibition-4.webp">
+            <div class="exhibition-card__image-wrapper">
+              <img class="exhibition-card__image" src="assets/exhibition-4.webp" alt="Festive Edit Trunk Show &mdash; Hyderabad" loading="lazy">
+              <div class="exhibition-card__overlay">
+                <span class="exhibition-card__location">Hyderabad</span>
+                <h3 class="exhibition-card__name">The Festive Edit</h3>
+                <span class="exhibition-card__year">2024</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT SECTION ===== -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about__inner reveal">
+        <div class="about__header">
+          <span class="about__label">Who We Are</span>
+          <h2 class="about__title" id="about-title-display">About Riya Dresses</h2>
+        </div>
+        <div class="about__content">
+          <div class="about__text-col">
+            <p class="about__text" id="about-p1-display">
+              Founded with a passion for timeless elegance, Riya Dresses is a premium designer boutique that brings together the finest traditions of Indian craftsmanship with contemporary design sensibilities. Every piece in our collection tells a story &mdash; of heritage, artistry, and the modern woman who wears it.
+            </p>
+            <p class="about__text" id="about-p2-display">
+              From hand-embroidered bridal lehengas to sleek evening gowns, we curate and craft garments that are as individual as the women who choose them. Our design philosophy is rooted in quality over quantity &mdash; each creation is made with intention, care, and an unwavering commitment to excellence.
+            </p>
+          </div>
+          <div class="about__text-col">
+            <p class="about__text" id="about-p3-display">
+              We believe fashion should empower. Our collections are designed for moments that matter &mdash; weddings, celebrations, galas, and every occasion where you deserve to feel extraordinary. With a focus on luxurious fabrics, impeccable tailoring, and intricate detailing, Riya Dresses is where dreams meet design.
+            </p>
+            <div class="about__stats">
+              <div class="about__stat">
+                <span class="about__stat-number" id="about-stat1-num-display">500+</span>
+                <span class="about__stat-label" id="about-stat1-lbl-display">Happy Clients</span>
+              </div>
+              <div class="about__stat">
+                <span class="about__stat-number" id="about-stat2-num-display">50+</span>
+                <span class="about__stat-label" id="about-stat2-lbl-display">Exhibitions</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer" id="footer">
+    <div class="footer__inner">
+      <div class="footer__grid">
+        <div class="footer__col">
+          <img class="footer__brand-logo" src="assets/logo-text-wide.svg" alt="Riya Dresses">
+          <p class="footer__brand-desc">Premium designer boutique curating exceptional collections for the modern woman. Each handpicked piece is a celebration of heritage, style, and contemporary elegance.</p>
+        </div>
+        <div class="footer__col" id="footer-collections-col">
+          <h3 class="footer__col-title">Collections</h3>
+          <a href="#products" class="footer__link" id="footer-new-arrivals">New Arrivals</a>
+          <!-- Dynamic category links injected by index.js -->
+        </div>
+        <div class="footer__col">
+          <h3 class="footer__col-title">Get in Touch</h3>
+          <a href="#" class="footer__link whatsapp-cta" data-product="General Inquiry" id="footer-whatsapp">WhatsApp</a>
+          <a href="mailto:riyachugh598@gmail.com" class="footer__link" id="footer-email">Email</a>
+          <a href="#" class="footer__link" id="footer-exhibitions">Exhibitions</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span class="footer__copyright">&copy; 2026 Riya Dresses. All Rights Reserved.</span>
+        <div class="footer__socials">
+          <a href="https://www.instagram.com/riya__dresses/" target="_blank" rel="noopener noreferrer" class="footer__social-link" id="social-instagram" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/>
+            </svg>
+          </a>
+          <a href="#" class="footer__social-link" id="social-facebook" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/>
+            </svg>
+          </a>
+          <a href="#" class="footer__social-link" id="social-pinterest" aria-label="Pinterest">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6V7.5z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SEARCH OVERLAY ===== -->
+  <div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true">
+    <div class="search-overlay__header">
+      <div class="search-overlay__search-box">
+        <svg class="search-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="search" id="search-input" placeholder="Type to search collections..." aria-label="Search">
+      </div>
+      <button class="search-overlay__close" id="search-close-btn" aria-label="Close search">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="search-overlay__body">
+      <div class="search-overlay__results-container">
+        <p class="search-overlay__placeholder" id="search-placeholder-msg">Start typing to search products...</p>
+        <div class="search-results-grid" id="search-results-grid" style="display: none;">
+          <!-- Dynamically loaded product search results go here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== WISHLIST SIDE DRAWER ===== -->
+  <div class="side-drawer" id="wishlist-drawer" role="dialog" aria-modal="true">
+    <div class="side-drawer__overlay" id="wishlist-drawer-overlay"></div>
+    <div class="side-drawer__panel">
+      <div class="side-drawer__header">
+        <h3 class="side-drawer__title">My Wishlist</h3>
+        <button class="side-drawer__close" id="wishlist-drawer-close" aria-label="Close wishlist">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="side-drawer__body" id="wishlist-drawer-body">
+        <!-- Dynamic wishlist items render here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SHOPPING BAG SIDE DRAWER ===== -->
+  <div class="side-drawer" id="bag-drawer" role="dialog" aria-modal="true">
+    <div class="side-drawer__overlay" id="bag-drawer-overlay"></div>
+    <div class="side-drawer__panel">
+      <div class="side-drawer__header">
+        <h3 class="side-drawer__title">Shopping Bag</h3>
+        <button class="side-drawer__close" id="bag-drawer-close" aria-label="Close bag">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="side-drawer__body" id="bag-drawer-body">
+        <!-- Dynamic cart items render here -->
+      </div>
+      <div class="side-drawer__footer" id="bag-drawer-footer" style="display: none;">
+        <div class="side-drawer__summary">
+          <span class="summary-label">Subtotal</span>
+          <span class="summary-value" id="bag-subtotal">&#x20B9;0</span>
+        </div>
+        <p class="checkout-note">Orders are finalized and compiled to place via WhatsApp.</p>
+        <button class="admin-btn admin-btn--primary admin-btn--full" id="checkout-btn">
+          Checkout via WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PRODUCT QUICK VIEW MODAL ===== -->
+  <div class="modal-overlay" id="quick-view-modal" role="dialog" aria-modal="true">
+    <button class="quick-view-close" id="quick-view-close-btn" aria-label="Close modal">&times;</button>
+    <div class="quick-view-card">
+      <div class="quick-view-grid">
+        <div class="quick-view-image-side">
+          <img id="qv-image" src="" alt="Product Image">
+        </div>
+        <div class="quick-view-info-side">
+          <span class="qv-category" id="qv-category">Evening Wear</span>
+          <h2 class="qv-title" id="qv-title">Midnight Silhouette Dress</h2>
+          <span class="qv-price" id="qv-price">&#x20B9;28,500</span>
+          
+          <p class="qv-desc" id="qv-desc">
+            Exquisitely tailored designer piece featuring hand-selected premium fabrics and artisanal craftsmanship. Made with intention to embody slow luxury and modern elegance.
+          </p>
+          
+          <div class="qv-sizes-container">
+            <span class="qv-size-label">Select Size</span>
+            <div class="qv-sizes-grid" id="qv-sizes-grid">
+              <button class="qv-size-btn" data-size="XS">XS</button>
+              <button class="qv-size-btn" data-size="S">S</button>
+              <button class="qv-size-btn" data-size="M">M</button>
+              <button class="qv-size-btn" data-size="L">L</button>
+              <button class="qv-size-btn" data-size="XL">XL</button>
+            </div>
+            <span class="size-error" id="qv-size-error-msg" style="display: none;">Please select a size.</span>
+          </div>
+
+          <div class="qv-actions">
+            <button class="admin-btn admin-btn--primary" id="qv-add-to-bag-btn">Add to Bag</button>
+            <button class="admin-btn admin-btn--outline" id="qv-whatsapp-inquiry-btn">Inquire via WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LIGHTBOX MODAL ===== -->
+  <div class="lightbox" id="lightbox-modal" aria-hidden="true" role="dialog">
+    <button class="lightbox__close" id="lightbox-close" aria-label="Close lightbox">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    <div class="lightbox__content">
+      <img class="lightbox__image" id="lightbox-img" src="" alt="">
+      <div class="lightbox__caption">
+        <span class="lightbox__location" id="lightbox-loc"></span>
+        <h3 class="lightbox__title" id="lightbox-title"></h3>
+      </div>
+    </div>
+  </div>
+
+  <script src="index.js?v=3" type="module"></script>
+</body>
+</html>

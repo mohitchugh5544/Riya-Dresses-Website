@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Riya Dresses</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="admin.css">
+  <!-- Preconnect for Google Fonts performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body class="admin-body">
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div id="login-container" class="login-container">
+    <div class="login-card">
+      <div class="login-card__header">
+        <img src="assets/logo-text-wide.svg" alt="Riya Dresses" class="login-card__logo">
+        <h1 class="login-card__title">Owner Portal</h1>
+        <p class="login-card__subtitle">Please enter your administrator credentials</p>
+      </div>
+      
+      <!-- Fallback warning if Firebase config is missing -->
+      <div id="config-warning" class="admin-alert admin-alert--warning" style="display: none;">
+        <strong>Configuration Required:</strong> Please configure your Firebase credentials in <code>firebase-config.js</code> to enable login.
+      </div>
+
+      <form id="login-form" class="login-form">
+        <div class="form-group">
+          <label for="login-email" class="form-label">Email Address</label>
+          <input type="email" id="login-email" class="form-input" required autocomplete="email" placeholder="owner@riyadresses.com">
+        </div>
+        <div class="form-group">
+          <label for="login-password" class="form-label">Password</label>
+          <input type="password" id="login-password" class="form-input" required autocomplete="current-password" placeholder="••••••••">
+        </div>
+        <button type="submit" id="login-submit-btn" class="admin-btn admin-btn--primary admin-btn--full">
+          Sign In
+        </button>
+      </form>
+      <div id="login-error" class="admin-alert admin-alert--danger" style="display: none;"></div>
+    </div>
+  </div>
+
+  <!-- ===== MAIN DASHBOARD ===== -->
+  <div id="dashboard-container" class="dashboard-container" style="display: none;">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar__brand">
+        <img src="assets/logo-text-wide.svg" alt="Riya Dresses" class="admin-sidebar__logo">
+        <span class="admin-sidebar__badge">Control Panel</span>
+      </div>
+
+      <nav class="admin-sidebar__nav">
+        <button class="sidebar-link active" data-tab="products">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+          Manage Products
+        </button>
+        <button class="sidebar-link" data-tab="hero">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Featured Tiles
+        </button>
+        <button class="sidebar-link" data-tab="content">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          Site Content
+        </button>
+        <button class="sidebar-link" data-tab="analytics">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+          </svg>
+          Analytics
+        </button>
+      </nav>
+
+      <div class="admin-sidebar__footer">
+        <div class="admin-sidebar__user">
+          <span class="user-email" id="admin-user-email">owner@riyadresses.com</span>
+        </div>
+        <button id="logout-btn" class="admin-btn admin-btn--outline admin-btn--full">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="admin-main">
+      <header class="admin-main__header">
+        <h2 id="current-tab-title" class="admin-main__title">Products</h2>
+        <div class="admin-main__actions">
+          <button id="add-product-btn" class="admin-btn admin-btn--primary">
+            + Add Product
+          </button>
+        </div>
+      </header>
+
+      <!-- Messages Banner -->
+      <div id="status-message" class="admin-alert" style="display: none;"></div>
+
+      <!-- Loading overlay inside workspace -->
+      <div id="workspace-loading" class="workspace-loading">
+        <div class="spinner"></div>
+        <p>Syncing with database...</p>
+      </div>
+
+      <!-- TAB 1: PRODUCTS -->
+      <section id="tab-products" class="tab-content active">
+        <div class="admin-card">
+          <div class="table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-table-body">
+                <!-- Dynamic products rendered here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: HERO CAROUSEL -->
+      <section id="tab-hero" class="tab-content">
+        <div class="grid-layout grid-layout--2col">
+          <!-- Slide list -->
+          <div class="admin-card">
+            <h3 class="admin-card__title">Featured Category Tiles</h3>
+            <p class="admin-card__desc">Manage the top banners. We recommend landscape images (16:9 ratio).</p>
+            <div class="slides-list" id="slides-container">
+              <!-- Dynamic slides listed here -->
+            </div>
+          </div>
+          <!-- Upload form -->
+          <div class="admin-card">
+            <h3 class="admin-card__title" id="slide-form-title">Upload New Slide</h3>
+            <form id="slide-form" class="slide-form">
+              <input type="hidden" id="slide-id">
+              <div class="form-group">
+                <label for="slide-image-file" class="form-label">Upload Image</label>
+                <div class="image-upload-zone" id="slide-upload-zone">
+                  <span class="upload-placeholder">Click to select or drop landscape image</span>
+                  <img id="slide-image-preview" src="#" alt="Preview" style="display: none;">
+                  <input type="file" id="slide-image-file" accept="image/*" style="display: none;">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" id="cancel-slide-edit" class="admin-btn admin-btn--outline" style="display: none;">Cancel</button>
+                <button type="submit" class="admin-btn admin-btn--primary">Save Slide</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: SITE CONTENT -->
+      <section id="tab-content" class="tab-content">
+        <div class="content-sections-list">
+          
+          <!-- General Site Settings -->
+          <div class="admin-card">
+            <h3 class="admin-card__title">General Business &amp; Contact Info</h3>
+            <form id="general-settings-form" class="content-form">
+              <div class="grid-layout grid-layout--2col">
+                <div class="form-group">
+                  <label for="setting-whatsapp" class="form-label">WhatsApp Number</label>
+                  <input type="text" id="setting-whatsapp" class="form-input" placeholder="919999999999 (country code, no symbols)">
+                  <span class="form-help">Enter country code first, followed by phone number. Do not use +, spaces, or dashes.</span>
+                </div>
+                <div class="form-group">
+                  <label for="setting-google-review" class="form-label">Google Review URL</label>
+                  <input type="url" id="setting-google-review" class="form-input" placeholder="https://g.page/r/.../review">
+                  <span class="form-help">Link where clients can leave reviews directly.</span>
+                </div>
+              </div>
+              <div class="form-group" style="margin-top: var(--space-md);">
+                <label for="setting-imgbb-key" class="form-label">ImgBB API Key (For Free Image Uploads)</label>
+                <input type="text" id="setting-imgbb-key" class="form-input" placeholder="Enter your free ImgBB API Key">
+                <span class="form-help">Bypasses Firebase Storage. Get one for free at <a href="https://api.imgbb.com/" target="_blank" style="text-decoration: underline; color: var(--color-black); font-weight: 500;">api.imgbb.com</a> (no card required).</span>
+              </div>
+              <button type="submit" class="admin-btn admin-btn--primary">Save Settings</button>
+            </form>
+          </div>
+
+          <!-- Top Banner & Countdown Timer Settings -->
+          <div class="admin-card">
+            <h3 class="admin-card__title">Top Banner &amp; Countdown Timer</h3>
+            <p class="admin-card__desc">Manage the top alert bar and target date/time for the countdown clock. Keep it active for sales, new arrival drops, or exhibition announcements.</p>
+            <form id="timer-settings-form" class="content-form">
+              <div class="form-group row" style="margin-bottom: var(--space-md);">
+                <label for="setting-timer-show" class="form-label">Show Announcement Banner</label>
+                <label class="switch-toggle">
+                  <input type="checkbox" id="setting-timer-show" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="grid-layout grid-layout--2col">
+                <div class="form-group">
+                  <label for="setting-timer-label" class="form-label">Banner Label (Left Text)</label>
+                  <input type="text" id="setting-timer-label" class="form-input" placeholder="e.g. Exhibition & New Arrival Alerts" required>
+                </div>
+                <div class="form-group">
+                  <label for="setting-timer-headline" class="form-label">Timer Headline (Before Clock)</label>
+                  <input type="text" id="setting-timer-headline" class="form-input" placeholder="e.g. Next Exhibition Drop — Countdown Initiated" required>
+                </div>
+              </div>
+              <div class="form-group" style="margin-top: var(--space-md);">
+                <label for="setting-timer-end" class="form-label">Countdown Target Date &amp; Time</label>
+                <input type="datetime-local" id="setting-timer-end" class="form-input" required>
+                <span class="form-help">Select the date and time when the countdown timer should reach zero.</span>
+              </div>
+              <button type="submit" class="admin-btn admin-btn--primary">Save Timer Settings</button>
+            </form>
+          </div>
+
+          <!-- Product Categories Section -->
+          <div class="admin-card">
+            <h3 class="admin-card__title">Manage Product Categories</h3>
+            <p class="admin-card__desc">Add or delete custom categories. Categories immediately sync with product edit options and main website filters.</p>
+            <div class="grid-layout grid-layout--2col">
+              <div class="categories-list-pane">
+                <ul id="admin-categories-list" class="admin-categories-list">
+                  <!-- Dynamic categories rendered here -->
+                </ul>
+              </div>
+              <form id="add-category-form" class="category-form">
+                <div class="form-group">
+                  <label for="new-category-name" class="form-label">Category Name</label>
+                  <input type="text" id="new-category-name" class="form-input" placeholder="e.g. Bridal Wear, Accessories" required>
+                </div>
+                <button type="submit" class="admin-btn admin-btn--primary">Add Category</button>
+              </form>
+            </div>
+          </div>
+          
+          <!-- Reviews Management Section -->
+          <div class="admin-card">
+            <h3 class="admin-card__title">Manage Customer Reviews</h3>
+            <p class="admin-card__desc">Add, toggle visibility of, or delete testimonials displayed in the Google Reviews Carousel on the homepage.</p>
+            <div class="grid-layout grid-layout--2col">
+              <div class="reviews-list-pane">
+                <div id="admin-reviews-list" class="admin-reviews-list">
+                  <!-- Dynamic reviews rendered here -->
+                </div>
+              </div>
+              <form id="add-review-form" class="review-form">
+                <div class="form-group">
+                  <label for="new-review-author" class="form-label">Reviewer Name</label>
+                  <input type="text" id="new-review-author" class="form-input" placeholder="e.g. Priya Sharma" required>
+                </div>
+                <div class="form-group">
+                  <label for="new-review-rating" class="form-label">Rating</label>
+                  <select id="new-review-rating" class="form-input" required>
+                    <option value="5" selected>5 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="2">2 Stars</option>
+                    <option value="1">1 Star</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="new-review-text" class="form-label">Review Text</label>
+                  <textarea id="new-review-text" class="form-input form-textarea" placeholder="Type customer review here..." style="min-height: 100px;" required></textarea>
+                </div>
+                <button type="submit" class="admin-btn admin-btn--primary">Add Review</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- About Section Details -->
+          <div class="admin-card">
+            <h3 class="admin-card__title">About Riya Dresses</h3>
+            <form id="about-content-form" class="content-form">
+              <div class="form-group">
+                <label for="about-title" class="form-label">Section Title</label>
+                <input type="text" id="about-title" class="form-input" placeholder="About Riya Dresses">
+              </div>
+              <div class="form-group">
+                <label for="about-p1" class="form-label">Paragraph 1</label>
+                <textarea id="about-p1" class="form-input form-textarea" placeholder="First paragraph..."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="about-p2" class="form-label">Paragraph 2</label>
+                <textarea id="about-p2" class="form-input form-textarea" placeholder="Second paragraph..."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="about-p3" class="form-label">Paragraph 3</label>
+                <textarea id="about-p3" class="form-input form-textarea" placeholder="Third paragraph..."></textarea>
+              </div>
+              
+              <!-- Stats -->
+              <h4 class="form-subtitle">Key Stats Counters</h4>
+              <div class="grid-layout grid-layout--2col-equal">
+                <div class="form-group">
+                  <label for="about-stat1-num" class="form-label">Stat 1 Value</label>
+                  <input type="text" id="about-stat1-num" class="form-input" placeholder="500+">
+                  <input type="text" id="about-stat1-lbl" class="form-input form-input-sub" placeholder="Happy Clients">
+                </div>
+                <div class="form-group">
+                  <label for="about-stat2-num" class="form-label">Stat 2 Value</label>
+                  <input type="text" id="about-stat2-num" class="form-input" placeholder="50+">
+                  <input type="text" id="about-stat2-lbl" class="form-input form-input-sub" placeholder="Exhibitions">
+                </div>
+              </div>
+
+              <button type="submit" class="admin-btn admin-btn--primary">Save About Content</button>
+            </form>
+          </div>
+
+          <!-- Brand Story (Atelier) Section -->
+          <div class="admin-card">
+            <h3 class="admin-card__title">The Atelier (Brand Story)</h3>
+            <form id="brand-story-form" class="content-form">
+              <div class="form-group">
+                <label for="atelier-title" class="form-label">Headline Title</label>
+                <input type="text" id="atelier-title" class="form-input" placeholder="Crafted With Intention...">
+              </div>
+              <div class="form-group">
+                <label for="atelier-p1" class="form-label">Paragraph 1</label>
+                <textarea id="atelier-p1" class="form-input form-textarea" placeholder="First paragraph..."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="atelier-p2" class="form-label">Paragraph 2</label>
+                <textarea id="atelier-p2" class="form-input form-textarea" placeholder="Second paragraph..."></textarea>
+              </div>
+              <button type="submit" class="admin-btn admin-btn--primary">Save Brand Story</button>
+            </form>
+          </div>
+
+          <!-- Instagram Reels Management Section -->
+          <div class="admin-card">
+            <h3 class="admin-card__title" id="reels-manager-title">Manage Instagram Reels</h3>
+            <p class="admin-card__desc">Add, edit, reorder, or delete vertical (9:16) looping videos for the Instagram Reels section on the homepage.</p>
+            <div class="grid-layout grid-layout--2col">
+              <div class="reels-list-pane">
+                <div id="admin-reels-list" class="admin-reels-list">
+                  <!-- Dynamic reels rendered here -->
+                </div>
+              </div>
+              <form id="add-reel-form" class="reel-form">
+                <h4 class="form-subtitle" id="reel-form-title">Add New Reel</h4>
+                <input type="hidden" id="reel-id">
+                <div class="form-group">
+                  <label for="reel-video-url" class="form-label">Instagram Reel URL</label>
+                  <input type="url" id="reel-video-url" class="form-input" placeholder="https://www.instagram.com/reel/ABC123/" required>
+                  <span class="form-help">Paste the full Instagram reel URL. Likes, comments & video will sync automatically.</span>
+                </div>
+                <div class="form-group">
+                  <label for="reel-caption" class="form-label">Reel Caption (optional override)</label>
+                  <input type="text" id="reel-caption" class="form-input" placeholder="Leave blank to use Instagram's caption">
+                </div>
+                <div class="form-group">
+                  <label for="reel-whatsapp-tag" class="form-label">WhatsApp Product Tag / Name</label>
+                  <input type="text" id="reel-whatsapp-tag" class="form-input" placeholder="e.g. Crimson Elegance Gown" required>
+                  <span class="form-help">Prefills the chat text when clients inquire about this look.</span>
+                </div>
+                <div class="form-group row">
+                  <label for="reel-active" class="form-label">Show Reel on Public Site</label>
+                  <label class="switch-toggle">
+                    <input type="checkbox" id="reel-active" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="form-actions">
+                  <button type="button" id="cancel-reel-edit" class="admin-btn admin-btn--outline" style="display: none;">Cancel</button>
+                  <button type="submit" class="admin-btn admin-btn--primary">Save Reel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB 4: ANALYTICS -->
+      <section id="tab-analytics" class="tab-content">
+        <div class="analytics-toolbar">
+          <div class="analytics-range-pills">
+            <button class="analytics-pill is-active" data-range="7">Last 7 days</button>
+            <button class="analytics-pill" data-range="30">Last 30 days</button>
+            <button class="analytics-pill" data-range="90">Last 90 days</button>
+          </div>
+          <button id="analytics-refresh-btn" class="admin-btn admin-btn--outline">↻ Refresh</button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <span class="kpi-card__label">Product Views</span>
+            <span class="kpi-card__value" id="kpi-views">—</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-card__label">WhatsApp Inquiries</span>
+            <span class="kpi-card__value" id="kpi-inquiries">—</span>
+            <span class="kpi-card__sub" id="kpi-conversion">—</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-card__label">Wishlist Adds</span>
+            <span class="kpi-card__value" id="kpi-wishlist">—</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-card__label">Searches</span>
+            <span class="kpi-card__value" id="kpi-searches">—</span>
+          </div>
+        </div>
+
+        <!-- Most Viewed Products -->
+        <div class="admin-card">
+          <h3 class="admin-card__title">Most Viewed Products</h3>
+          <div id="analytics-most-viewed" class="analytics-ranked-list">No data yet.</div>
+        </div>
+
+        <!-- Daily Activity Chart -->
+        <div class="admin-card">
+          <h3 class="admin-card__title">Daily Activity</h3>
+          <div id="analytics-daily-chart" class="bar-chart-container">No data yet.</div>
+        </div>
+
+        <!-- Top Search Queries -->
+        <div class="admin-card">
+          <h3 class="admin-card__title">Top Search Queries</h3>
+          <div id="analytics-top-searches" class="analytics-ranked-list">No data yet.</div>
+        </div>
+
+        <!-- Category Filter Usage -->
+        <div class="admin-card">
+          <h3 class="admin-card__title">Category Filter Usage</h3>
+          <div id="analytics-filter-usage" class="analytics-ranked-list">No data yet.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ===== ADD/EDIT PRODUCT MODAL ===== -->
+  <div id="product-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title" class="modal-title">Add New Product</h3>
+        <button id="close-modal-btn" class="modal-close-btn">&times;</button>
+      </div>
+      <form id="product-form" class="product-form">
+        <input type="hidden" id="product-id">
+        
+        <div class="form-group">
+          <label for="product-image-file" class="form-label">Product Image</label>
+          <div class="image-upload-zone" id="product-upload-zone">
+            <span class="upload-placeholder">Click to select or drop product image</span>
+            <img id="product-image-preview" src="#" alt="Preview" style="display: none;">
+            <input type="file" id="product-image-file" accept="image/*" style="display: none;">
+          </div>
+          <input type="hidden" id="product-image-url">
+        </div>
+
+        <div class="form-group">
+          <label for="product-name" class="form-label">Product Name</label>
+          <input type="text" id="product-name" class="form-input" placeholder="e.g. Royal Sapphire Saree" required>
+        </div>
+
+        <div class="grid-layout grid-layout--2col">
+          <div class="form-group">
+            <label for="product-price" class="form-label">Original Price (INR)</label>
+            <input type="text" id="product-price" class="form-input" placeholder="e.g. ₹42,000" required>
+          </div>
+          <div class="form-group">
+            <label for="product-sale-price" class="form-label">Sale Price (INR) <span style="font-weight:300; font-size:10px;">(Optional)</span></label>
+            <input type="text" id="product-sale-price" class="form-input" placeholder="e.g. ₹34,000">
+          </div>
+        </div>
+
+        <div class="grid-layout grid-layout--2col">
+          <div class="form-group">
+            <label for="product-category" class="form-label">Category</label>
+            <select id="product-category" class="form-input" required>
+              <option value="saree">Sarees</option>
+              <option value="lehenga">Lehengas</option>
+              <option value="dress">Dresses</option>
+              <option value="kurti">Kurtis</option>
+              <option value="gown">Gowns</option>
+              <option value="top">Tops</option>
+              <option value="jeans">Jeans</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="product-stock" class="form-label">Stock Count</label>
+            <input type="number" id="product-stock" class="form-input" placeholder="e.g. 10" min="0" value="10" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Available Sizes</label>
+          <div style="display: flex; gap: var(--space-md); flex-wrap: wrap; margin-top: 5px;">
+            <label style="display: inline-flex; align-items: center; gap: var(--space-xs); font-size: 12px; cursor: pointer;">
+              <input type="checkbox" name="product-sizes" value="XS" checked> XS
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: var(--space-xs); font-size: 12px; cursor: pointer;">
+              <input type="checkbox" name="product-sizes" value="S" checked> S
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: var(--space-xs); font-size: 12px; cursor: pointer;">
+              <input type="checkbox" name="product-sizes" value="M" checked> M
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: var(--space-xs); font-size: 12px; cursor: pointer;">
+              <input type="checkbox" name="product-sizes" value="L" checked> L
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: var(--space-xs); font-size: 12px; cursor: pointer;">
+              <input type="checkbox" name="product-sizes" value="XL" checked> XL
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: var(--space-xs); font-size: 12px; cursor: pointer;">
+              <input type="checkbox" name="product-sizes" value="XXL"> XXL
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="product-display-category" class="form-label">Display Subtitle / Collection Category</label>
+          <input type="text" id="product-display-category" class="form-input" placeholder="e.g. Festive Saree, Bridal Couture" required>
+        </div>
+
+        <div class="form-group row">
+          <label for="product-new-arrival" class="form-label">Mark as New Arrival</label>
+          <label class="switch-toggle">
+            <input type="checkbox" id="product-new-arrival">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="form-group row">
+          <label for="product-active" class="form-label">Show Product on Public Site</label>
+          <label class="switch-toggle">
+            <input type="checkbox" id="product-active" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="cancel-product-btn" class="admin-btn admin-btn--outline">Cancel</button>
+          <button type="submit" class="admin-btn admin-btn--primary">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Load JS as type module -->
+  <script type="module" src="admin.js?v=3"></script>
+</body>
+</html>

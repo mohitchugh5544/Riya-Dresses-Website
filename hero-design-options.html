@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Section Design Options</title>
+<style>
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-voice: Georgia, serif;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-accent: #6366f1;
+  --surface-0: #ffffff;
+  --surface-1: #f8fafc;
+  --surface-2: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --bg-accent: #e0e7ff;
+  --text-accent: #4338ca;
+  --bg-success: #dcfce7;
+  --text-success: #15803d;
+  --bg-warning: #fef9c3;
+  --text-warning: #a16207;
+}
+
+body {
+  margin: 0;
+  padding: 40px 20px;
+  background-color: var(--surface-1);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.dashboard-header {
+  margin-bottom: 8px;
+}
+.dashboard-header h1 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+.dashboard-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+/* Grid Layouts */
+.grid-primary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.grid-secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+}
+
+.grid-standalone {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .grid-primary, .grid-secondary {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card Styling */
+.choice-card {
+  background-color: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.choice-card:hover {
+  border-color: var(--border-accent);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  transform: translateY(-2px);
+}
+
+.preview-card {
+  height: 220px;
+  background-color: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.metadata-card {
+  padding: 20px;
+}
+
+.metadata-header {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 99px;
+}
+
+.badge-accent {
+  background-color: var(--bg-accent);
+  color: var(--text-accent);
+}
+
+.badge-success {
+  background-color: var(--bg-success);
+  color: var(--text-success);
+}
+
+.badge-warning {
+  background-color: var(--bg-warning);
+  color: var(--text-warning);
+}
+
+.metadata-title {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.metadata-desc {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* =========================================
+   MOCKUP LAYOUTS
+   ========================================= */
+
+/* 1. Lookbook Grid */
+.mockup-lookbook {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+}
+.lookbook-left {
+  background-color: var(--border);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+.lookbook-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 30px;
+  height: 10px;
+  background-color: var(--surface-0);
+  border-radius: 2px;
+}
+.lookbook-text {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  width: 60%;
+  height: 12px;
+  background-color: var(--surface-0);
+  border-radius: 2px;
+}
+.lookbook-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lookbook-right > div {
+  background-color: var(--border);
+  border-radius: 6px;
+  flex: 1;
+}
+
+/* 2. Split Layout */
+.mockup-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+.split-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.split-title {
+  width: 80%;
+  height: 24px;
+  background-color: var(--border-strong);
+  border-radius: 4px;
+}
+.split-subtitle {
+  width: 60%;
+  height: 12px;
+  background-color: var(--border);
+  border-radius: 4px;
+}
+.split-cta {
+  width: 40%;
+  height: 24px;
+  background-color: var(--text-primary);
+  border-radius: 4px;
+  margin-top: 8px;
+}
+.split-right {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  height: 100%;
+}
+.split-right > div {
+  background-color: var(--border);
+  border-radius: 6px;
+}
+
+/* 3. Marquee Strip */
+.mockup-marquee {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+.marquee-top {
+  display: flex;
+  justify-content: center;
+}
+.marquee-square {
+  width: 60px;
+  height: 60px;
+  background-color: var(--border);
+  border-radius: 4px;
+}
+.marquee-middle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 24px;
+  background-color: var(--surface-2);
+  border-radius: 4px;
+}
+.marquee-item {
+  width: 40px;
+  height: 8px;
+  background-color: var(--border-strong);
+  border-radius: 2px;
+}
+.marquee-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--text-muted);
+  border-radius: 50%;
+}
+.marquee-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.marquee-title {
+  width: 100px;
+  height: 16px;
+  background-color: var(--border-strong);
+  border-radius: 4px;
+}
+.marquee-action {
+  width: 80px;
+  height: 24px;
+  background-color: var(--text-primary);
+  border-radius: 4px;
+}
+
+/* 4. Social Proof Strip */
+.mockup-social {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+}
+.social-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  flex: 1;
+}
+.social-col {
+  background-color: var(--border);
+  border-radius: 6px;
+}
+.social-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--surface-2);
+  padding: 12px;
+  border-radius: 6px;
+}
+.social-quote {
+  width: 60%;
+  height: 12px;
+  background-color: var(--border-strong);
+  border-radius: 2px;
+  transform: skewX(-15deg); /* Italicized placeholder */
+}
+.social-stars {
+  display: flex;
+  gap: 4px;
+}
+.star {
+  width: 10px;
+  height: 10px;
+  background-color: var(--text-warning);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* 5. Category Tiles */
+.mockup-categories {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+}
+.cat-tile {
+  background-color: var(--border);
+  border-radius: 6px;
+  position: relative;
+}
+.cat-large {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+.cat-text {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  height: 8px;
+  background-color: var(--surface-0);
+  border-radius: 2px;
+}
+.cat-large .cat-text { width: 50%; }
+.cat-tile:not(.cat-large) .cat-text { width: 60%; }
+
+/* 6. Exhibition Event */
+.mockup-exhibition {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+}
+.exhib-top {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+.exhib-half {
+  flex: 1;
+  background-color: var(--border);
+  border-radius: 6px;
+}
+.exhib-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--surface-2);
+  padding: 12px 16px;
+  border-radius: 8px;
+  gap: 16px;
+}
+.exhib-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.exhib-data {
+  height: 10px;
+  background-color: var(--border-strong);
+  border-radius: 2px;
+}
+.exhib-data:first-child { width: 80%; }
+.exhib-data:last-child { width: 50%; background-color: var(--border); }
+.exhib-timer {
+  display: flex;
+  gap: 4px;
+}
+.timer-box {
+  width: 24px;
+  height: 28px;
+  background-color: var(--surface-0);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+}
+.exhib-action {
+  width: 100px;
+  height: 28px;
+  background-color: var(--text-primary);
+  border-radius: 4px;
+}
+
+</style>
+<script>
+  function sendPrompt(layoutName) {
+    console.log("Triggered layout:", layoutName);
+    alert("You selected the '" + layoutName + "' design option.");
+  }
+</script>
+</head>
+<body>
+
+<div class="dashboard-container">
+  
+  <div class="dashboard-header">
+    <h1>Hero Section Designs</h1>
+    <p>Select a layout structure to activate for the storefront.</p>
+  </div>
+
+  <!-- Primary Section (2 Columns) -->
+  <section class="grid-primary">
+    
+    <!-- Split Layout -->
+    <div class="choice-card" onclick="sendPrompt('Split Layout: 50/50 division with left typography and right 2x2 grid')">
+      <div class="preview-card">
+        <div class="mockup-split">
+          <div class="split-left">
+            <div class="split-title"></div>
+            <div class="split-subtitle"></div>
+            <div class="split-cta"></div>
+          </div>
+          <div class="split-right">
+            <div></div><div></div><div></div><div></div>
+          </div>
+        </div>
+      </div>
+      <div class="metadata-card">
+        <div class="metadata-header">
+          <span class="badge badge-accent">Recommended</span>
+        </div>
+        <h3 class="metadata-title">Split Editorial</h3>
+        <p class="metadata-desc">A premium 50/50 division highlighting bold typography on the left and a 2x2 miniature image grid on the right. Perfect for high-fashion lookbooks.</p>
+      </div>
+    </div>
+
+    <!-- Lookbook Grid -->
+    <div class="choice-card" onclick="sendPrompt('Lookbook Grid: Mosaic with main left column and 2 stacked right columns')">
+      <div class="preview-card">
+        <div class="mockup-lookbook">
+          <div class="lookbook-left">
+            <div class="lookbook-badge"></div>
+            <div class="lookbook-text"></div>
+          </div>
+          <div class="lookbook-right">
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      </div>
+      <div class="metadata-card">
+        <div class="metadata-header">
+          <span class="badge badge-accent">Recommended</span>
+        </div>
+        <h3 class="metadata-title">The Mosaic</h3>
+        <p class="metadata-desc">An elegant, magazine-style grid featuring a primary full-height hero shot alongside two stacked supporting detail images.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Secondary Section (3 Columns) -->
+  <section class="grid-secondary">
+    
+    <!-- Marquee Strip -->
+    <div class="choice-card" onclick="sendPrompt('Marquee Strip: Vertical stack with centered element and horizontal inline strip')">
+      <div class="preview-card">
+        <div class="mockup-marquee">
+          <div class="marquee-top">
+            <div class="marquee-square"></div>
+          </div>
+          <div class="marquee-middle">
+            <div class="marquee-item"></div><div class="marquee-dot"></div>
+            <div class="marquee-item"></div><div class="marquee-dot"></div>
+            <div class="marquee-item"></div>
+          </div>
+          <div class="marquee-bottom">
+            <div class="marquee-title"></div>
+            <div class="marquee-action"></div>
+          </div>
+        </div>
+      </div>
+      <div class="metadata-card">
+        <div class="metadata-header">
+          <span class="badge badge-warning">Medium</span>
+        </div>
+        <h3 class="metadata-title">Marquee Strip</h3>
+        <p class="metadata-desc">A highly dynamic layout centered around a rotating marquee bar and a focused focal image. Great for brand awareness.</p>
+      </div>
+    </div>
+
+    <!-- Social Proof Strip -->
+    <div class="choice-card" onclick="sendPrompt('Social Proof Strip: 3 equal horizontal columns with italicized quote and stars')">
+      <div class="preview-card">
+        <div class="mockup-social">
+          <div class="social-top">
+            <div class="social-col"></div>
+            <div class="social-col"></div>
+            <div class="social-col"></div>
+          </div>
+          <div class="social-bottom">
+            <div class="social-quote"></div>
+            <div class="social-stars">
+              <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="metadata-card">
+        <div class="metadata-header">
+          <span class="badge badge-success">Easy</span>
+        </div>
+        <h3 class="metadata-title">Social Proof</h3>
+        <p class="metadata-desc">Builds immediate trust using a 3-column image block paired directly with an eye-catching 5-star customer review banner.</p>
+      </div>
+    </div>
+
+    <!-- Category Tiles -->
+    <div class="choice-card" onclick="sendPrompt('Category Tiles: 5-element tile array with large top-left span')">
+      <div class="preview-card">
+        <div class="mockup-categories">
+          <div class="cat-tile cat-large"><div class="cat-text"></div></div>
+          <div class="cat-tile"><div class="cat-text"></div></div>
+          <div class="cat-tile"><div class="cat-text"></div></div>
+          <div class="cat-tile"><div class="cat-text"></div></div>
+          <div class="cat-tile"><div class="cat-text"></div></div>
+        </div>
+      </div>
+      <div class="metadata-card">
+        <div class="metadata-header">
+          <span class="badge badge-success">Easy</span>
+        </div>
+        <h3 class="metadata-title">Category Array</h3>
+        <p class="metadata-desc">An immersive 5-tile grid that directs immediate attention to specific collections rather than a single featured product.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Standalone Section (1 Column) -->
+  <section class="grid-standalone">
+    
+    <!-- Exhibition Event -->
+    <div class="choice-card" onclick="sendPrompt('Exhibition Event: Split hero images over an event tracking row with live countdown')">
+      <div class="preview-card">
+        <div class="mockup-exhibition">
+          <div class="exhib-top">
+            <div class="exhib-half"></div>
+            <div class="exhib-half"></div>
+          </div>
+          <div class="exhib-bottom">
+            <div class="exhib-info">
+              <div class="exhib-data"></div>
+              <div class="exhib-data"></div>
+            </div>
+            <div class="exhib-timer">
+              <div class="timer-box"></div>
+              <div class="timer-box"></div>
+              <div class="timer-box"></div>
+            </div>
+            <div class="exhib-action"></div>
+          </div>
+        </div>
+      </div>
+      <div class="metadata-card">
+        <div class="metadata-header">
+          <span class="badge badge-warning">Medium</span>
+        </div>
+        <h3 class="metadata-title">Exhibition Event Trailer</h3>
+        <p class="metadata-desc">A high-conversion layout designed specifically for upcoming launches. Features split preview images hovering over a sticky live countdown timer and immediate registration CTA.</p>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+</body>
+</html>
