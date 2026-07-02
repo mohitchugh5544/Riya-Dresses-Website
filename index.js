@@ -521,7 +521,6 @@ async function logEvent(type, data = {}) {
             tile.innerHTML = `
               <img src="${slide.imageUrl}" alt="${slide.alt || slideTitle}" loading="${index === 0 ? 'eager' : 'lazy'}">
               <div class="cat-tile-overlay"></div>
-              <h2 class="cat-title">${slideTitle}</h2>
             `;
             heroEl.appendChild(tile);
           });
