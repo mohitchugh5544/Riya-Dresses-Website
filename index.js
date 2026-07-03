@@ -48,6 +48,7 @@ async function logEvent(type, data = {}) {
     initScrollReveal();
     initInteractiveFeatures();
     initInstagramReels();
+    initStatsCounter();
 
     if (isFirebaseConfigured) {
       try {
@@ -1769,6 +1770,54 @@ async function logEvent(type, data = {}) {
     }
 
     // 3. Reels WhatsApp Inquiries (disabled)
+  }
+
+  function startCounterAnimation(el) {
+    if (el.dataset.animated === 'true') return;
+    el.dataset.animated = 'true';
+    
+    const text = el.textContent.trim();
+    const isPlus = text.endsWith('+');
+    const target = parseInt(text.replace(/\D/g, ''), 10);
+    
+    if (isNaN(target)) return;
+    
+    const duration = 2000;
+    const startTime = performance.now();
+    
+    function updateCounter(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      const current = Math.floor(progress * target);
+      el.textContent = current + (isPlus ? '+' : '');
+      
+      if (progress < 1) {
+        requestAnimationFrame(updateCounter);
+      } else {
+        el.textContent = target + (isPlus ? '+' : '');
+      }
+    }
+    requestAnimationFrame(updateCounter);
+  }
+
+  function initStatsCounter() {
+    const stat1 = document.getElementById('about-stat1-num-display');
+    const stat2 = document.getElementById('about-stat2-num-display');
+    const els = [stat1, stat2].filter(Boolean);
+    
+    if (els.length === 0) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          startCounterAnimation(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    
+    els.forEach(el => observer.observe(el));
   }
 
 })();

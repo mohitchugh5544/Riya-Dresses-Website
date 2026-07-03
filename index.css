@@ -956,7 +956,7 @@ ul, ol {
    ABOUT SECTION
    ============================================================ */
 .about {
-  padding: var(--space-5xl) 0;
+  padding: var(--space-2xl) 0 var(--space-5xl) 0;
   border-top: 1px solid var(--color-neutral-200);
   border-bottom: 1px solid var(--color-neutral-200);
 }
@@ -1756,9 +1756,20 @@ body.js-loaded .reveal-stagger.is-visible > *:nth-child(n+13) { transition-delay
 
 .search-overlay__close {
   cursor: pointer;
-  background: none;
-  border: none;
+  background: var(--color-white);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 50%;
   padding: var(--space-sm);
+  position: absolute;
+  top: var(--space-xl);
+  right: var(--space-xl);
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+.search-overlay__close:hover {
+  background: var(--color-neutral-100);
+  transform: rotate(90deg);
 }
 
 .search-overlay__close svg {
@@ -2179,7 +2190,7 @@ body.js-loaded .reveal-stagger.is-visible > *:nth-child(n+13) { transition-delay
    EXHIBITIONS GALLERY SECTION
    ============================================================ */
 .exhibitions {
-  padding: var(--space-5xl) 0;
+  padding: var(--space-2xl) 0 var(--space-2xl) 0;
   background-color: var(--color-beige-100);
 }
 
@@ -2453,6 +2464,36 @@ body.js-loaded .reveal-stagger.is-visible > *:nth-child(n+13) { transition-delay
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: var(--space-2xl);
+}
+
+.reels__follow-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-xl);
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.reels__follow-btn:hover {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 39, 67, 0.3);
+  color: var(--color-white);
+}
+
+.reels__follow-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.reels__follow-btn:hover svg {
+  transform: scale(1.1);
 }
 
 @media (max-width: 480px) {
