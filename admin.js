@@ -796,10 +796,21 @@ async function fetchSiteContent() {
     if (dom.settingTimerShow) dom.settingTimerShow.checked = !!data.show;
     if (dom.settingTimerLabel) dom.settingTimerLabel.value = data.label || '';
     if (dom.settingTimerHeadline) dom.settingTimerHeadline.value = data.headline || '';
-    if (data.targetDate) {
-      dom.settingTimerEnd.value = data.targetDate;
+    if (data.targetDate && dom.settingTimerEnd) {
+      // Format ISO or Date string for input[type=datetime-local]
+      const d = new Date(data.targetDate);
+      if (!isNaN(d.getTime())) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        dom.settingTimerEnd.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+      } else {
+        dom.settingTimerEnd.value = String(data.targetDate).substring(0, 16);
+      }
     }
-    if (data.postTimerText !== undefined) {
+    if (dom.settingTimerPostText && data.postTimerText !== undefined) {
       dom.settingTimerPostText.value = data.postTimerText;
     }
   }
@@ -908,11 +919,11 @@ function setupSettingsHandlers() {
       
       try {
         await setDoc(doc(db, 'settings', 'timer'), {
-          show: dom.settingTimerShow.checked,
-          label: dom.settingTimerLabel.value.trim(),
-          headline: dom.settingTimerHeadline.value.trim(),
-          targetDate: dom.settingTimerEnd.value,
-          postTimerText: dom.settingTimerPostText.value.trim(),
+          show: dom.settingTimerShow ? dom.settingTimerShow.checked : true,
+          label: dom.settingTimerLabel ? dom.settingTimerLabel.value.trim() : "",
+          headline: dom.settingTimerHeadline ? dom.settingTimerHeadline.value.trim() : "",
+          targetDate: dom.settingTimerEnd ? dom.settingTimerEnd.value : "",
+          postTimerText: dom.settingTimerPostText ? dom.settingTimerPostText.value.trim() : "",
           updatedAt: Date.now()
         });
         showAlert("Timer settings saved successfully!");

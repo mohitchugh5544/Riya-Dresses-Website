@@ -239,6 +239,11 @@ async function logEvent(type, data = {}) {
 
     if (!daysEl || !hoursEl || !minsEl || !secsEl) return;
 
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+
     function update() {
       const now = new Date();
       const diff = exhibitionDate - now;
