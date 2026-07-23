@@ -749,6 +749,7 @@ async function reorderSlide(slideId, direction) {
   } catch (error) {
     console.error("Error reordering slide:", error);
     showAlert("Failed to reorder slide.", "danger");
+  } finally {
     hideLoading();
   }
 }
@@ -1397,6 +1398,7 @@ async function toggleReviewActive(reviewId) {
   } catch (error) {
     console.error("Error toggling review active:", error);
     showAlert("Failed to toggle review visibility.", "danger");
+  } finally {
     hideLoading();
   }
 }
@@ -1633,6 +1635,7 @@ async function toggleReelActive(reelId) {
   } catch (error) {
     console.error("Error toggling reel active:", error);
     showAlert("Failed to toggle reel status.", "danger");
+  } finally {
     hideLoading();
   }
 }
@@ -1661,6 +1664,7 @@ async function reorderReel(reelId, direction) {
   } catch (error) {
     console.error("Error reordering reel:", error);
     showAlert("Failed to reorder reel.", "danger");
+  } finally {
     hideLoading();
   }
 }
