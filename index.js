@@ -163,9 +163,18 @@ async function logEvent(type, data = {}) {
         reelsGrid.appendChild(skel);
       }
     }
+
+    // Top banner — hide until Firebase timer data arrives
+    const topBanner = document.getElementById('top-banner');
+    if (topBanner) {
+      topBanner.style.display = 'none';
+    }
   }
 
   function initStaticFallbacks() {
+    const topBanner = document.getElementById('top-banner');
+    if (topBanner) topBanner.style.display = 'block';
+
     // Ensure static products are parsed
     parseStaticProducts();
     const staticCards = document.querySelectorAll('#products-grid .product-card');
@@ -453,11 +462,11 @@ async function logEvent(type, data = {}) {
     async function fetchTimer() {
       try {
         const timerSnap = await getDoc(doc(db, 'settings', 'timer'));
+        const topBanner = document.getElementById('top-banner');
         if (timerSnap.exists()) {
           const data = timerSnap.data();
           
           // Show/hide top banner
-          const topBanner = document.getElementById('top-banner');
           if (topBanner) {
             topBanner.style.display = data.show ? 'block' : 'none';
           }
@@ -486,9 +495,13 @@ async function logEvent(type, data = {}) {
             localStorage.setItem('riya_countdown_target', exhibitionDate.toISOString());
             initCountdown();
           }
+        } else {
+          if (topBanner) topBanner.style.display = 'block';
         }
       } catch (e) {
         console.warn("Error loading timer settings:", e);
+        const topBanner = document.getElementById('top-banner');
+        if (topBanner) topBanner.style.display = 'block';
       }
     }
 
