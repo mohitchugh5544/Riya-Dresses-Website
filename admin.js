@@ -596,12 +596,18 @@ function renderHeroSlides() {
   }
 
   slidesList.forEach((slide, index) => {
+    const isBig = index === 0;
+    const labelText = isBig ? 'BIG' : `Small ${index}`;
+    const badgeText = isBig ? 'Main Banner' : `Small Section ${index}`;
+    const badgeStyle = isBig ? 'background-color: #fef3c7; color: #92400e;' : 'background-color: #e0f2fe; color: #075985;';
+
     const item = document.createElement('div');
     item.className = 'slide-item';
     item.innerHTML = `
-      <img class="slide-item__thumbnail" src="${slide.imageUrl || 'assets/hero-placeholder.png'}" alt="Slide">
+      <img class="slide-item__thumbnail" src="${slide.imageUrl || 'assets/hero-placeholder.png'}" alt="${labelText}">
       <div class="slide-item__info">
-        <span class="slide-item__title">Slide Image</span>
+        <span class="slide-item__title" style="font-weight: 700; font-size: 15px; letter-spacing: 0.05em;">${labelText}</span>
+        <span class="status-badge" style="${badgeStyle} font-size: 10px; margin-top: 4px; display: inline-block;">${badgeText}</span>
       </div>
       <div class="table-actions">
         <button class="action-btn edit-slide-btn" data-id="${slide.id}">Edit</button>
