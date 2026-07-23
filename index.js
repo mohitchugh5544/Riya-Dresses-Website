@@ -37,6 +37,7 @@ async function logEvent(type, data = {}) {
     return fallback;
   })();
   let countdownInterval = null;
+  let postTimerTextStr = "";
 
   async function init() {
     // Parse static products immediately so search works on load
@@ -51,6 +52,8 @@ async function logEvent(type, data = {}) {
     initStatsCounter();
 
     if (isFirebaseConfigured) {
+      // Immediately replace stale static HTML with skeleton placeholders
+      showLoadingSkeletons();
       try {
         await loadDynamicContent();
       } catch (error) {
@@ -82,6 +85,84 @@ async function logEvent(type, data = {}) {
       const prod = { id, name, price, displayCategory, category, isNewArrival, imageUrl, stockCount };
       allProducts.push(prod);
     });
+  }
+
+  function renderProductCardSizes(prodSizes) {
+    const allStandardSizes = ["XS", "S", "M", "L", "XL"];
+    const available = prodSizes && Array.isArray(prodSizes) && prodSizes.length > 0 ? prodSizes : ["XS", "S", "M", "L", "XL"];
+    return allStandardSizes.map(s => {
+      if (available.includes(s)) {
+        return s;
+      } else {
+        return `<span class="size-crossed">${s}</span>`;
+      }
+    }).join(', ');
+  }
+
+  /** Replace static HTML with skeleton loading placeholders so users
+   *  never see stale deployment-time content while Firebase loads. */
+  function showLoadingSkeletons() {
+    // Products grid — replace static cards with skeleton cards
+    const gridEl = document.getElementById('products-grid');
+    if (gridEl) {
+      gridEl.innerHTML = '';
+      for (let i = 0; i < 6; i++) {
+        const skel = document.createElement('div');
+        skel.className = 'skeleton-product-card';
+        skel.innerHTML = `
+          <div class="skeleton-product-card__image skeleton-pulse"></div>
+          <div class="skeleton-product-card__name skeleton-pulse"></div>
+          <div class="skeleton-product-card__price skeleton-pulse"></div>
+          <div class="skeleton-product-card__category skeleton-pulse"></div>
+        `;
+        gridEl.appendChild(skel);
+      }
+    }
+
+    // Hero tiles — show skeleton tiles
+    const heroEl = document.getElementById('category-tiles-container');
+    if (heroEl) {
+      heroEl.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const skel = document.createElement('div');
+        skel.className = `skeleton-hero-tile skeleton-pulse ${i === 0 ? 'cat-large' : ''}`;
+        heroEl.appendChild(skel);
+      }
+    }
+
+    // Category filters — show skeleton filter buttons
+    const filterContainer = document.getElementById('category-filters');
+    if (filterContainer) {
+      filterContainer.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const skel = document.createElement('div');
+        skel.className = 'skeleton-filter-btn skeleton-pulse';
+        skel.style.marginRight = '8px';
+        filterContainer.appendChild(skel);
+      }
+    }
+
+    // Reviews carousel — show skeleton review cards
+    const reviewsTrack = document.querySelector('.testimonials__track');
+    if (reviewsTrack) {
+      reviewsTrack.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const skel = document.createElement('div');
+        skel.className = 'skeleton-review-card skeleton-pulse';
+        reviewsTrack.appendChild(skel);
+      }
+    }
+
+    // Reels grid — show skeleton reel cards
+    const reelsGrid = document.querySelector('.reels__grid');
+    if (reelsGrid) {
+      reelsGrid.innerHTML = '';
+      for (let i = 0; i < 4; i++) {
+        const skel = document.createElement('div');
+        skel.className = 'skeleton-reel-card skeleton-pulse';
+        reelsGrid.appendChild(skel);
+      }
+    }
   }
 
   function initStaticFallbacks() {
@@ -158,7 +239,27 @@ async function logEvent(type, data = {}) {
         hoursEl.textContent = '00';
         minsEl.textContent = '00';
         secsEl.textContent = '00';
+        
+        if (postTimerTextStr) {
+          const inner = document.querySelector('.top-banner__inner');
+          const postTimerEl = document.getElementById('top-banner-post-timer');
+          if (inner) inner.style.display = 'none';
+          if (postTimerEl) {
+            postTimerEl.textContent = postTimerTextStr;
+            postTimerEl.style.display = 'block';
+          }
+        }
         return;
+      }
+
+      // If timer is active, ensure normal inner is shown (in case it was hidden previously)
+      const inner = document.querySelector('.top-banner__inner');
+      const postTimerEl = document.getElementById('top-banner-post-timer');
+      if (inner && inner.style.display === 'none') {
+        inner.style.display = 'flex';
+      }
+      if (postTimerEl && postTimerEl.style.display === 'block') {
+        postTimerEl.style.display = 'none';
       }
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -331,418 +432,447 @@ async function logEvent(type, data = {}) {
       orderBy 
     } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
 
-    // 1. Fetch settings (WhatsApp & Google Reviews)
-    try {
-      const genSnap = await getDoc(doc(db, 'settings', 'general'));
-      if (genSnap.exists()) {
-        const data = genSnap.data();
-        if (data.whatsapp) activeWhatsappNumber = data.whatsapp;
-        if (data.googleReviewUrl) {
-          const btn = document.getElementById('google-review-btn');
-          if (btn) btn.href = data.googleReviewUrl;
+    // --- Individual fetch functions (each self-contained with try/catch) ---
+
+    async function fetchSettings() {
+      try {
+        const genSnap = await getDoc(doc(db, 'settings', 'general'));
+        if (genSnap.exists()) {
+          const data = genSnap.data();
+          if (data.whatsapp) activeWhatsappNumber = data.whatsapp;
+          if (data.googleReviewUrl) {
+            const btn = document.getElementById('google-review-btn');
+            if (btn) btn.href = data.googleReviewUrl;
+          }
         }
+      } catch (e) {
+        console.warn("Error loading general settings:", e);
       }
-    } catch (e) {
-      console.warn("Error loading general settings:", e);
     }
 
-    // 1a. Fetch countdown timer settings
-    try {
-      const timerSnap = await getDoc(doc(db, 'settings', 'timer'));
-      if (timerSnap.exists()) {
-        const data = timerSnap.data();
-        
-        // Show/hide top banner
-        const topBanner = document.getElementById('top-banner');
-        if (topBanner) {
-          topBanner.style.display = data.show ? 'block' : 'none';
+    async function fetchTimer() {
+      try {
+        const timerSnap = await getDoc(doc(db, 'settings', 'timer'));
+        if (timerSnap.exists()) {
+          const data = timerSnap.data();
+          
+          // Show/hide top banner
+          const topBanner = document.getElementById('top-banner');
+          if (topBanner) {
+            topBanner.style.display = data.show ? 'block' : 'none';
+          }
+          
+          // Update label
+          const labelEl = document.getElementById('top-banner-label');
+          if (labelEl && data.label) {
+            labelEl.textContent = data.label;
+          }
+          
+          // Update headline
+          const headlineEl = document.getElementById('top-banner-headline');
+          if (headlineEl && data.headline) {
+            headlineEl.textContent = data.headline;
+          }
+
+          // Set post timer text
+          if (data.postTimerText !== undefined) {
+            postTimerTextStr = data.postTimerText;
+          }
+          
+          // Update target date & restart timer
+          if (data.targetDate) {
+            exhibitionDate = new Date(data.targetDate);
+            // Persist the Firebase-provided date so it survives reloads
+            localStorage.setItem('riya_countdown_target', exhibitionDate.toISOString());
+            initCountdown();
+          }
         }
-        
-        // Update label
-        const labelEl = document.getElementById('top-banner-label');
-        if (labelEl && data.label) {
-          labelEl.textContent = data.label;
-        }
-        
-        // Update headline
-        const headlineEl = document.getElementById('top-banner-headline');
-        if (headlineEl && data.headline) {
-          headlineEl.textContent = data.headline;
-        }
-        
-        // Update target date & restart timer
-        if (data.targetDate) {
-          exhibitionDate = new Date(data.targetDate);
-          // Persist the Firebase-provided date so it survives reloads
-          localStorage.setItem('riya_countdown_target', exhibitionDate.toISOString());
-          initCountdown();
-        }
+      } catch (e) {
+        console.warn("Error loading timer settings:", e);
       }
-    } catch (e) {
-      console.warn("Error loading timer settings:", e);
     }
 
-    // 1b. Fetch Categories from Firestore
-    try {
-      const qCats = query(collection(db, 'categories'));
-      const catsSnap = await getDocs(qCats);
-      const categoriesList = [];
-      catsSnap.forEach(snap => {
-        categoriesList.push(snap.data());
-      });
+    async function fetchCategories() {
+      try {
+        const qCats = query(collection(db, 'categories'));
+        const catsSnap = await getDocs(qCats);
+        const categoriesList = [];
+        catsSnap.forEach(snap => {
+          categoriesList.push(snap.data());
+        });
 
-      if (categoriesList.length > 0) {
-        categoriesList.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        if (categoriesList.length > 0) {
+          categoriesList.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
 
-        const filterContainer = document.getElementById('category-filters');
-        if (filterContainer) {
-          filterContainer.innerHTML = `
-            <button class="products__filter-btn is-active" data-filter="all" id="filter-all">All</button>
-            <button class="products__filter-btn" data-filter="new-arrivals" id="filter-new-arrivals">New Arrivals</button>
-          `;
-          categoriesList.forEach(cat => {
-            const btn = document.createElement('button');
-            btn.className = 'products__filter-btn';
-            btn.setAttribute('data-filter', cat.slug);
-            btn.setAttribute('id', `filter-${cat.slug}`);
-            btn.textContent = cat.name;
-            filterContainer.appendChild(btn);
-          });
-        }
-
-        // Also sync footer Collections column with Firestore categories
-        const footerCol = document.getElementById('footer-collections-col');
-        if (footerCol) {
-          // Remove any previously injected dynamic links
-          footerCol.querySelectorAll('.footer__link--dynamic').forEach(el => el.remove());
-          categoriesList.forEach(cat => {
-            const link = document.createElement('a');
-            link.href = '#products';
-            link.className = 'footer__link footer__link--dynamic';
-            link.id = `footer-cat-${cat.slug}`;
-            link.textContent = cat.name;
-            link.addEventListener('click', (e) => {
-              e.preventDefault();
-              document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
-              // Small delay to let scroll happen, then trigger the filter
-              setTimeout(() => {
-                const filterBtn = document.getElementById(`filter-${cat.slug}`);
-                if (filterBtn) filterBtn.click();
-              }, 400);
+          const filterContainer = document.getElementById('category-filters');
+          if (filterContainer) {
+            filterContainer.innerHTML = `
+              <button class="products__filter-btn is-active" data-filter="all" id="filter-all">All</button>
+              <button class="products__filter-btn" data-filter="new-arrivals" id="filter-new-arrivals">New Arrivals</button>
+            `;
+            categoriesList.forEach(cat => {
+              const btn = document.createElement('button');
+              btn.className = 'products__filter-btn';
+              btn.setAttribute('data-filter', cat.slug);
+              btn.setAttribute('id', `filter-${cat.slug}`);
+              btn.textContent = cat.name;
+              filterContainer.appendChild(btn);
             });
-            footerCol.appendChild(link);
-          });
+          }
+
+          // Also sync footer Collections column with Firestore categories
+          const footerCol = document.getElementById('footer-collections-col');
+          if (footerCol) {
+            // Remove any previously injected dynamic links
+            footerCol.querySelectorAll('.footer__link--dynamic').forEach(el => el.remove());
+            categoriesList.forEach(cat => {
+              const link = document.createElement('a');
+              link.href = '#products';
+              link.className = 'footer__link footer__link--dynamic';
+              link.id = `footer-cat-${cat.slug}`;
+              link.textContent = cat.name;
+              link.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+                // Small delay to let scroll happen, then trigger the filter
+                setTimeout(() => {
+                  const filterBtn = document.getElementById(`filter-${cat.slug}`);
+                  if (filterBtn) filterBtn.click();
+                }, 400);
+              });
+              footerCol.appendChild(link);
+            });
+          }
         }
+      } catch (e) {
+        console.warn("Error loading categories from Firestore:", e);
       }
-    } catch (e) {
-      console.warn("Error loading categories from Firestore:", e);
     }
 
-    // 2. Fetch About content
-    try {
-      const aboutSnap = await getDoc(doc(db, 'settings', 'about'));
-      if (aboutSnap.exists()) {
-        const data = aboutSnap.data();
-        const titleEl = document.getElementById('about-title-display');
-        const p1El = document.getElementById('about-p1-display');
-        const p2El = document.getElementById('about-p2-display');
-        const p3El = document.getElementById('about-p3-display');
-        
-        const s1Num = document.getElementById('about-stat1-num-display');
-        const s1Lbl = document.getElementById('about-stat1-lbl-display');
-        const s2Num = document.getElementById('about-stat2-num-display');
-        const s2Lbl = document.getElementById('about-stat2-lbl-display');
+    async function fetchAbout() {
+      try {
+        const aboutSnap = await getDoc(doc(db, 'settings', 'about'));
+        if (aboutSnap.exists()) {
+          const data = aboutSnap.data();
+          const titleEl = document.getElementById('about-title-display');
+          const p1El = document.getElementById('about-p1-display');
+          const p2El = document.getElementById('about-p2-display');
+          const p3El = document.getElementById('about-p3-display');
+          
+          const s1Num = document.getElementById('about-stat1-num-display');
+          const s1Lbl = document.getElementById('about-stat1-lbl-display');
+          const s2Num = document.getElementById('about-stat2-num-display');
+          const s2Lbl = document.getElementById('about-stat2-lbl-display');
 
-        if (titleEl && data.title) titleEl.textContent = data.title;
-        if (p1El && data.p1) p1El.textContent = data.p1;
-        if (p2El && data.p2) p2El.textContent = data.p2;
-        if (p3El && data.p3) p3El.textContent = data.p3;
-        
-        if (s1Num && data.stat1_num) s1Num.textContent = data.stat1_num;
-        if (s1Lbl && data.stat1_lbl) s1Lbl.textContent = data.stat1_lbl;
-        if (s2Num && data.stat2_num) s2Num.textContent = data.stat2_num;
-        if (s2Lbl && data.stat2_lbl) s2Lbl.textContent = data.stat2_lbl;
-      }
-    } catch (e) {
-      console.warn("Error loading About section:", e);
-    }
-
-    // 3. Fetch Brand Story (Atelier)
-    const atelierDefaults = {
-      title: "Hand-Selected Elegance,\nCurated with Vision.",
-      p1: "At Riya Dresses, we believe that true style lies in the art of selection. We travel, discover, and partner with premium brands and trusted heritage resellers across the region to bring you a deeply personal, elite collection under one roof. Every single piece is individually vetted for its fabric quality, tailoring precision, and distinct silhouette.",
-      p2: "We save our clients the endless search by doing the curation for you\u2014sourcing exceptional festive sets, timeless sarees, and modern dresses that balance high-fashion trends with premium comfort. You aren\u2019t just buying a dress; you are experiencing a collection edited to perfection."
-    };
-    try {
-      const titleEl = document.getElementById('atelier-title-display');
-      const p1El = document.getElementById('atelier-p1-display');
-      const p2El = document.getElementById('atelier-p2-display');
-
-      // One-time migration: update Firebase with the new Atelier text
-      const migrationKey = 'riya_atelier_v2_synced';
-      if (!localStorage.getItem(migrationKey)) {
-        await setDoc(doc(db, 'settings', 'brand-story'), atelierDefaults, { merge: true });
-        localStorage.setItem(migrationKey, 'true');
-      }
-
-      // Fetch from Firebase (now guaranteed to have correct text)
-      const brandSnap = await getDoc(doc(db, 'settings', 'brand-story'));
-      const data = brandSnap.exists() ? brandSnap.data() : atelierDefaults;
-
-      if (titleEl) titleEl.innerHTML = (data.title || atelierDefaults.title).replace(/\n/g, '<br>');
-      if (p1El) p1El.textContent = data.p1 || atelierDefaults.p1;
-      if (p2El) p2El.textContent = data.p2 || atelierDefaults.p2;
-    } catch (e) {
-      console.warn("Error loading Brand Story:", e);
-    }
-
-    // 4. Fetch Hero Slides
-    try {
-      const qSlides = query(collection(db, 'hero_slides'), orderBy('order', 'asc'));
-      const slidesSnap = await getDocs(qSlides);
-      const activeSlides = [];
-      slidesSnap.forEach(snap => {
-        const slide = snap.data();
-        activeSlides.push(slide);
-      });
-
-      if (activeSlides.length > 0) {
-        const heroEl = document.getElementById('category-tiles-container');
-        if (heroEl) {
-          heroEl.innerHTML = ''; // clear static fallbacks
-
-          activeSlides.forEach((slide, index) => {
-            const linkUrl = slide.linkUrl || '#products';
-            const slideTitle = slide.title || 'Collection';
-            
-            const tile = document.createElement('a');
-            tile.href = linkUrl;
-            tile.className = `cat-tile ${index === 0 ? 'cat-large' : ''}`;
-            
-            tile.innerHTML = `
-              <img src="${slide.imageUrl}" alt="${slide.alt || slideTitle}" loading="${index === 0 ? 'eager' : 'lazy'}">
-              <div class="cat-tile-overlay"></div>
-            `;
-            heroEl.appendChild(tile);
-          });
+          if (titleEl && data.title) titleEl.textContent = data.title;
+          if (p1El && data.p1) p1El.textContent = data.p1;
+          if (p2El && data.p2) p2El.textContent = data.p2;
+          if (p3El && data.p3) p3El.textContent = data.p3;
+          
+          if (s1Num && data.stat1_num) s1Num.textContent = data.stat1_num;
+          if (s1Lbl && data.stat1_lbl) s1Lbl.textContent = data.stat1_lbl;
+          if (s2Num && data.stat2_num) s2Num.textContent = data.stat2_num;
+          if (s2Lbl && data.stat2_lbl) s2Lbl.textContent = data.stat2_lbl;
         }
+      } catch (e) {
+        console.warn("Error loading About section:", e);
       }
-    } catch (e) {
-      console.warn("Error loading hero slides:", e);
     }
 
-    // 5. Fetch Products
-    try {
-      const qProducts = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
-      const productsSnap = await getDocs(qProducts);
-      const activeProducts = [];
-      productsSnap.forEach(snap => {
-        const prod = snap.data();
-        prod.id = snap.id;
-        if (prod.active) activeProducts.push(prod);
-      });
+    async function fetchBrandStory() {
+      const atelierDefaults = {
+        title: "Hand-Selected Elegance,\nCurated with Vision.",
+        p1: "At Riya Dresses, we believe that true style lies in the art of selection. We travel, discover, and partner with premium brands and trusted heritage resellers across the region to bring you a deeply personal, elite collection under one roof. Every single piece is individually vetted for its fabric quality, tailoring precision, and distinct silhouette.",
+        p2: "We save our clients the endless search by doing the curation for you\u2014sourcing exceptional festive sets, timeless sarees, and modern dresses that balance high-fashion trends with premium comfort. You aren\u2019t just buying a dress; you are experiencing a collection edited to perfection."
+      };
+      try {
+        const titleEl = document.getElementById('atelier-title-display');
+        const p1El = document.getElementById('atelier-p1-display');
+        const p2El = document.getElementById('atelier-p2-display');
 
-      if (activeProducts.length > 0) {
-        allProducts = activeProducts;
-        
-        const gridEl = document.getElementById('products-grid');
-        if (gridEl) {
-          gridEl.innerHTML = '';
-          activeProducts.forEach((prod) => {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.setAttribute('data-id', prod.id);
-            card.setAttribute('data-category', prod.category || 'dress');
-            card.setAttribute('data-new-arrival', prod.isNewArrival ? 'true' : 'false');
-            
-            // Handle out-of-stock class
-            if (prod.stockCount !== undefined && prod.stockCount <= 0) {
-              card.classList.add('product-card--out-of-stock');
-            }
+        // One-time migration: update Firebase with the new Atelier text
+        const migrationKey = 'riya_atelier_v2_synced';
+        if (!localStorage.getItem(migrationKey)) {
+          await setDoc(doc(db, 'settings', 'brand-story'), atelierDefaults, { merge: true });
+          localStorage.setItem(migrationKey, 'true');
+        }
 
-            const availableSizes = prod.sizes || ["XS", "S", "M", "L", "XL"];
+        // Fetch from Firebase (now guaranteed to have correct text)
+        const brandSnap = await getDoc(doc(db, 'settings', 'brand-story'));
+        const data = brandSnap.exists() ? brandSnap.data() : atelierDefaults;
 
-            // Render badges
-            let badgesHtml = '';
-            let leftOffset = 10;
-            if (prod.isNewArrival) {
-              badgesHtml += `<span class="product-card__badge product-card__badge--new" style="left: ${leftOffset}px;">New</span>`;
-              leftOffset += 45;
-            }
-            if (prod.salePrice) {
-              badgesHtml += `<span class="product-card__badge product-card__badge--sale" style="left: ${leftOffset}px;">Sale</span>`;
-            }
-            if (prod.stockCount !== undefined) {
-              if (prod.stockCount <= 0) {
-                badgesHtml += `<span class="product-card__badge product-card__badge--stock-out">Sold Out</span>`;
-              } else if (prod.stockCount <= 3) {
-                badgesHtml += `<span class="product-card__badge product-card__badge--stock-low">Only ${prod.stockCount} left!</span>`;
-              }
-            }
+        if (titleEl) titleEl.innerHTML = (data.title || atelierDefaults.title).replace(/\n/g, '<br>');
+        if (p1El) p1El.textContent = data.p1 || atelierDefaults.p1;
+        if (p2El) p2El.textContent = data.p2 || atelierDefaults.p2;
+      } catch (e) {
+        console.warn("Error loading Brand Story:", e);
+      }
+    }
 
-            // Render pricing layout
-            let priceHtml = '';
-            if (prod.salePrice) {
-              priceHtml = `
-                <div class="product-card__price-container">
-                  <span class="product-card__price-original">${prod.price}</span>
-                  <span class="product-card__price-sale">${prod.salePrice}</span>
-                </div>
+    async function fetchHeroSlides() {
+      try {
+        const qSlides = query(collection(db, 'hero_slides'), orderBy('order', 'asc'));
+        const slidesSnap = await getDocs(qSlides);
+        const activeSlides = [];
+        slidesSnap.forEach(snap => {
+          const slide = snap.data();
+          activeSlides.push(slide);
+        });
+
+        if (activeSlides.length > 0) {
+          const heroEl = document.getElementById('category-tiles-container');
+          if (heroEl) {
+            heroEl.innerHTML = ''; // clear skeletons / static fallbacks
+
+            activeSlides.forEach((slide, index) => {
+              const linkUrl = slide.linkUrl || '#products';
+              const slideTitle = slide.title || 'Collection';
+              
+              const tile = document.createElement('a');
+              tile.href = linkUrl;
+              tile.className = `cat-tile ${index === 0 ? 'cat-large' : ''}`;
+              
+              tile.innerHTML = `
+                <img src="${slide.imageUrl}" alt="${slide.alt || slideTitle}" loading="${index === 0 ? 'eager' : 'lazy'}">
+                <div class="cat-tile-overlay"></div>
               `;
-            } else {
-              priceHtml = `<span class="product-card__price">${prod.price}</span>`;
-            }
-
-            const displayPrice = prod.salePrice || prod.price;
-
-            card.innerHTML = `
-              <div class="product-card__image-wrapper">
-                <img class="product-card__image" src="${prod.imageUrl}" alt="${prod.name}" loading="lazy">
-                <button class="product-card__wishlist-btn ${wishlist.includes(prod.id) ? 'is-active' : ''}" data-id="${prod.id}" aria-label="Add to wishlist">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                  </svg>
-                </button>
-                ${badgesHtml}
-                <div class="product-card__overlay">
-                  <a href="#" class="product-card__quick-action whatsapp-cta" data-product="${prod.name} — ${displayPrice}">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
-                    </svg>
-                    Inquire via WhatsApp
-                  </a>
-                </div>
-              </div>
-              <div class="product-card__info">
-                <span class="product-card__name">${prod.name}</span>
-                ${priceHtml}
-                <span class="product-card__category">${prod.displayCategory || ''}</span>
-                <span class="product-card__sizes">Sizes: ${availableSizes.join(', ')}</span>
-              </div>
-            `;
-            attachProductCardEvents(card, prod);
-            gridEl.appendChild(card);
-          });
+              heroEl.appendChild(tile);
+            });
+          }
         }
+      } catch (e) {
+        console.warn("Error loading hero slides:", e);
       }
-    } catch (e) {
-      console.warn("Error loading products:", e);
     }
 
-    // 6. Fetch Reviews
-    try {
-      const qReviews = query(collection(db, 'reviews'));
-      const reviewsSnap = await getDocs(qReviews);
-      const activeReviews = [];
-      reviewsSnap.forEach(snap => {
-        const rev = snap.data();
-        if (rev.active) activeReviews.push(rev);
-      });
-      initReviewsCarousel(activeReviews);
-    } catch (e) {
-      console.warn("Error loading reviews from Firestore:", e);
-      initReviewsCarousel([]);
-    }
+    async function fetchProducts() {
+      try {
+        const qProducts = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+        const productsSnap = await getDocs(qProducts);
+        const activeProducts = [];
+        productsSnap.forEach(snap => {
+          const prod = snap.data();
+          prod.id = snap.id;
+          if (prod.active) activeProducts.push(prod);
+        });
 
-    // 7. Fetch Instagram Reels
-    try {
-      const qReels = query(collection(db, 'reels'), orderBy('order', 'asc'));
-      const reelsSnap = await getDocs(qReels);
-      const activeReels = [];
-      reelsSnap.forEach(snap => {
-        const reel = snap.data();
-        reel.id = snap.id;
-        if (reel.active) activeReels.push(reel);
-      });
+        if (activeProducts.length > 0) {
+          allProducts = activeProducts;
+          
+          const gridEl = document.getElementById('products-grid');
+          if (gridEl) {
+            gridEl.innerHTML = ''; // clear skeletons
+            activeProducts.forEach((prod) => {
+              const card = document.createElement('div');
+              card.className = 'product-card';
+              card.setAttribute('data-id', prod.id);
+              card.setAttribute('data-category', prod.category || 'dress');
+              card.setAttribute('data-new-arrival', prod.isNewArrival ? 'true' : 'false');
+              
+              // Handle out-of-stock class
+              if (prod.stockCount !== undefined && prod.stockCount <= 0) {
+                card.classList.add('product-card--out-of-stock');
+              }
 
-      if (activeReels.length > 0) {
-        const reelsGrid = document.querySelector('.reels__grid');
-        if (reelsGrid) {
-          reelsGrid.innerHTML = '';
-          activeReels.forEach(reel => {
-            // Extract embed URL from Instagram reel/post URL
-            let embedUrl = reel.videoUrl;
-            if (embedUrl) {
-              try {
-                const cleanUrl = new URL(embedUrl);
-                let path = cleanUrl.pathname;
-                if (path.startsWith('/')) path = path.substring(1);
-                if (path.endsWith('/')) path = path.substring(0, path.length - 1);
+              const availableSizes = prod.sizes || ["XS", "S", "M", "L", "XL"];
 
-                const segments = path.split('/');
-                if (segments[0] === 'reel' || segments[0] === 'p') {
-                  embedUrl = `https://www.instagram.com/${segments[0]}/${segments[1]}/embed/`;
-                } else if (cleanUrl.hostname.includes('instagram.com')) {
-                  embedUrl = `https://www.instagram.com/${path}/embed/`;
-                }
-              } catch (e) {
-                console.warn("Invalid Instagram URL, using fallback:", embedUrl, e);
-                if (!embedUrl.endsWith('/embed/') && !embedUrl.endsWith('/embed')) {
-                  embedUrl = embedUrl.replace(/\/$/, '') + '/embed/';
+              // Render badges
+              let badgesHtml = '';
+              let leftOffset = 10;
+              if (prod.isNewArrival) {
+                badgesHtml += `<span class="product-card__badge product-card__badge--new" style="left: ${leftOffset}px;">New</span>`;
+                leftOffset += 45;
+              }
+              if (prod.salePrice) {
+                badgesHtml += `<span class="product-card__badge product-card__badge--sale" style="left: ${leftOffset}px;">Sale</span>`;
+              }
+              if (prod.stockCount !== undefined) {
+                if (prod.stockCount <= 0) {
+                  badgesHtml += `<span class="product-card__badge product-card__badge--stock-out">Sold Out</span>`;
+                } else if (prod.stockCount <= 3) {
+                  badgesHtml += `<span class="product-card__badge product-card__badge--stock-low">Only ${prod.stockCount} left!</span>`;
                 }
               }
-            }
 
-            // Click-to-load: show a styled placeholder first.
-            // The iframe is only injected when the user clicks, preventing
-            // all Instagram network requests on page load.
-            const card = document.createElement('div');
-            card.className = 'reel-card reel-card--lazy';
-            card.setAttribute('data-embed-url', embedUrl);
-            card.setAttribute('role', 'button');
-            card.setAttribute('aria-label', 'Play Instagram reel');
-            card.setAttribute('tabindex', '0');
+              // Render pricing layout
+              let priceHtml = '';
+              if (prod.salePrice) {
+                priceHtml = `
+                  <div class="product-card__price-container">
+                    <span class="product-card__price-original">${prod.price}</span>
+                    <span class="product-card__price-sale">${prod.salePrice}</span>
+                  </div>
+                `;
+              } else {
+                priceHtml = `<span class="product-card__price">${prod.price}</span>`;
+              }
 
-            card.innerHTML = `
-              <div class="reel-card__placeholder">
-                <div class="reel-card__placeholder-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="white">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-                  </svg>
-                </div>
-                <div class="reel-card__placeholder-play">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="white">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-                <span class="reel-card__placeholder-label">Tap to play</span>
-              </div>
-            `;
+              const displayPrice = prod.salePrice || prod.price;
 
-            // Load the iframe only on click (or Enter key)
-            const loadEmbed = () => {
-              if (card.classList.contains('reel-card--loaded')) return;
-              card.classList.add('reel-card--loaded');
-              card.classList.remove('reel-card--lazy');
-              card.classList.add('reel-card--embed');
               card.innerHTML = `
-                <div class="reel-card__embed-wrapper">
-                  <iframe
-                    src="${embedUrl}"
-                    class="reel-card__iframe"
-                    frameborder="0"
-                    scrolling="no"
-                    allowtransparency="true"
-                    allowfullscreen="true"
-                  ></iframe>
+                <div class="product-card__image-wrapper">
+                  <img class="product-card__image" src="${prod.imageUrl}" alt="${prod.name}" loading="lazy">
+                  <button class="product-card__wishlist-btn ${wishlist.includes(prod.id) ? 'is-active' : ''}" data-id="${prod.id}" aria-label="Add to wishlist">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                  </button>
+                  ${badgesHtml}
+                  <div class="product-card__overlay">
+                    <a href="#" class="product-card__quick-action whatsapp-cta" data-product="${prod.name} — ${displayPrice}">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+                      </svg>
+                      Inquire via WhatsApp
+                    </a>
+                  </div>
+                </div>
+                <div class="product-card__info">
+                  <span class="product-card__name">${prod.name}</span>
+                  ${priceHtml}
+                  <span class="product-card__category">${prod.displayCategory || ''}</span>
+                  <span class="product-card__sizes">Sizes: ${renderProductCardSizes(prod.sizes)}</span>
                 </div>
               `;
-            };
-
-            card.addEventListener('click', loadEmbed);
-            card.addEventListener('keydown', (e) => {
-              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); loadEmbed(); }
+              attachProductCardEvents(card, prod);
+              gridEl.appendChild(card);
             });
-
-            reelsGrid.appendChild(card);
-          });
+          }
         }
+      } catch (e) {
+        console.warn("Error loading products:", e);
       }
-    } catch (e) {
-      console.warn("Error loading reels from Firestore:", e);
     }
 
-    // Initialize interactive components
+    async function fetchReviews() {
+      try {
+        const qReviews = query(collection(db, 'reviews'));
+        const reviewsSnap = await getDocs(qReviews);
+        const activeReviews = [];
+        reviewsSnap.forEach(snap => {
+          const rev = snap.data();
+          if (rev.active) activeReviews.push(rev);
+        });
+        initReviewsCarousel(activeReviews);
+      } catch (e) {
+        console.warn("Error loading reviews from Firestore:", e);
+        initReviewsCarousel([]);
+      }
+    }
+
+    async function fetchReels() {
+      try {
+        const qReels = query(collection(db, 'reels'), orderBy('order', 'asc'));
+        const reelsSnap = await getDocs(qReels);
+        const activeReels = [];
+        reelsSnap.forEach(snap => {
+          const reel = snap.data();
+          reel.id = snap.id;
+          if (reel.active) activeReels.push(reel);
+        });
+
+        if (activeReels.length > 0) {
+          const reelsGrid = document.querySelector('.reels__grid');
+          if (reelsGrid) {
+            reelsGrid.innerHTML = ''; // clear skeletons
+            activeReels.forEach(reel => {
+              // Extract embed URL from Instagram reel/post URL
+              let embedUrl = reel.videoUrl;
+              if (embedUrl) {
+                try {
+                  const cleanUrl = new URL(embedUrl);
+                  let path = cleanUrl.pathname;
+                  if (path.startsWith('/')) path = path.substring(1);
+                  if (path.endsWith('/')) path = path.substring(0, path.length - 1);
+
+                  const segments = path.split('/');
+                  if (segments[0] === 'reel' || segments[0] === 'p') {
+                    embedUrl = `https://www.instagram.com/${segments[0]}/${segments[1]}/embed/`;
+                  } else if (cleanUrl.hostname.includes('instagram.com')) {
+                    embedUrl = `https://www.instagram.com/${path}/embed/`;
+                  }
+                } catch (e) {
+                  console.warn("Invalid Instagram URL, using fallback:", embedUrl, e);
+                  if (!embedUrl.endsWith('/embed/') && !embedUrl.endsWith('/embed')) {
+                    embedUrl = embedUrl.replace(/\/$/, '') + '/embed/';
+                  }
+                }
+              }
+
+              // Click-to-load: show a styled placeholder first.
+              // The iframe is only injected when the user clicks, preventing
+              // all Instagram network requests on page load.
+              const card = document.createElement('div');
+              card.className = 'reel-card reel-card--lazy';
+              card.setAttribute('data-embed-url', embedUrl);
+              card.setAttribute('role', 'button');
+              card.setAttribute('aria-label', 'Play Instagram reel');
+              card.setAttribute('tabindex', '0');
+
+              card.innerHTML = `
+                <div class="reel-card__placeholder">
+                  <div class="reel-card__placeholder-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="#bfa37a">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                    </svg>
+                  </div>
+                  <div class="reel-card__placeholder-play">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#fdfcfb">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <span class="reel-card__placeholder-label">Tap to play</span>
+                </div>
+              `;
+
+              // Load the iframe only on click (or Enter key)
+              const loadEmbed = () => {
+                if (card.classList.contains('reel-card--loaded')) return;
+                card.classList.add('reel-card--loaded');
+                card.classList.remove('reel-card--lazy');
+                card.classList.add('reel-card--embed');
+                card.innerHTML = `
+                  <div class="reel-card__embed-wrapper">
+                    <iframe
+                      src="${embedUrl}"
+                      class="reel-card__iframe"
+                      frameborder="0"
+                      scrolling="no"
+                      allowtransparency="true"
+                      allowfullscreen="true"
+                    ></iframe>
+                  </div>
+                `;
+              };
+
+              card.addEventListener('click', loadEmbed);
+              card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); loadEmbed(); }
+              });
+
+              reelsGrid.appendChild(card);
+            });
+          }
+        }
+      } catch (e) {
+        console.warn("Error loading reels from Firestore:", e);
+      }
+    }
+
+    // --- Run ALL fetches in parallel for maximum speed ---
+    await Promise.allSettled([
+      fetchSettings(),
+      fetchTimer(),
+      fetchCategories(),
+      fetchAbout(),
+      fetchBrandStory(),
+      fetchHeroSlides(),
+      fetchProducts(),
+      fetchReviews(),
+      fetchReels()
+    ]);
+
+    // Initialize interactive components (after all data is rendered)
     initCarousel();
     initWhatsAppCTAs(activeWhatsappNumber);
     initCategoryFilter();
@@ -1052,7 +1182,7 @@ async function logEvent(type, data = {}) {
             <span class="product-card__name">${prod.name}</span>
             ${priceHtml}
             <span class="product-card__category">${prod.displayCategory || ''}</span>
-            <span class="product-card__sizes">Sizes: ${availableSizes.join(', ')}</span>
+            <span class="product-card__sizes">Sizes: ${renderProductCardSizes(prod.sizes)}</span>
           </div>
         `;
 
@@ -1308,7 +1438,7 @@ async function logEvent(type, data = {}) {
     });
 
     if (subtotalEl) {
-      subtotalEl.textContent = `₹${total.toLocaleString('en-IN')}${hasUponRequest ? ' + Price upon request' : ''}`;
+      subtotalEl.textContent = `RS ${total.toLocaleString('en-IN')}${hasUponRequest ? ' + Price upon request' : ''}`;
     }
   }
 
@@ -1538,7 +1668,7 @@ async function logEvent(type, data = {}) {
         const numericPrice = parseInt(item.price.replace(/[^\d]/g, ''), 10) || 0;
         const totalItemPrice = numericPrice * item.qty;
         subtotal += totalItemPrice;
-        itemTotalStr = `₹${totalItemPrice.toLocaleString('en-IN')}`;
+        itemTotalStr = `RS ${totalItemPrice.toLocaleString('en-IN')}`;
       }
       
       let imgUrl = item.imageUrl || '';
@@ -1551,7 +1681,7 @@ async function logEvent(type, data = {}) {
       messageText += `${index + 1}. ${item.name}\n   - Size: ${item.size}\n   - Qty: ${item.qty} x ${item.price}\n   - Total: ${itemTotalStr}${imgUrlStr}\n\n`;
     });
 
-    messageText += `Subtotal: ₹${subtotal.toLocaleString('en-IN')}${hasUponRequest ? ' + Price upon request' : ''}\n\n`;
+    messageText += `Subtotal: RS ${subtotal.toLocaleString('en-IN')}${hasUponRequest ? ' + Price upon request' : ''}\n\n`;
     messageText += "Please confirm order availability and payment details. Thank you!";
 
     if (!activeWhatsappNumber) {

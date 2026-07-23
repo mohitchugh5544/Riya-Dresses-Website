@@ -62,7 +62,6 @@ const dom = {
   productSalePrice: document.getElementById('product-sale-price'),
   productStock: document.getElementById('product-stock'),
   productCategory: document.getElementById('product-category'),
-  productDisplayCategory: document.getElementById('product-display-category'),
   productActive: document.getElementById('product-active'),
   productNewArrival: document.getElementById('product-new-arrival'),
   productImageUrl: document.getElementById('product-image-url'),
@@ -95,6 +94,7 @@ const dom = {
   settingTimerLabel: document.getElementById('setting-timer-label'),
   settingTimerHeadline: document.getElementById('setting-timer-headline'),
   settingTimerEnd: document.getElementById('setting-timer-end'),
+  settingTimerPostText: document.getElementById('setting-timer-post-text'),
 
   aboutContentForm: document.getElementById('about-content-form'),
   aboutTitle: document.getElementById('about-title'),
@@ -327,12 +327,11 @@ function renderProductsTable() {
         <img class="table-thumbnail" src="${prod.imageUrl || 'assets/product-placeholder.png'}" alt="${prod.name}">
       </td>
       <td>
-        <strong>${prod.name}</strong><br>
-        <span style="font-size: 11px; color: var(--color-neutral-500);">${prod.displayCategory || ''}</span>
+        <strong>${prod.name}</strong>
       </td>
       <td style="text-transform: capitalize;">${prod.category}</td>
       <td>
-        ${prod.salePrice ? `<span style="text-decoration: line-through; color: var(--color-neutral-450); font-size: 11px;">${prod.price}</span><br><strong style="color: #dc2626;">${prod.salePrice}</strong>` : prod.price}
+        ${prod.salePrice ? `<span style="text-decoration: line-through; color: var(--color-neutral-450); font-size: 11px;">${formatPriceWithCurrency(prod.price)}</span><br><strong style="color: #dc2626;">${formatPriceWithCurrency(prod.salePrice)}</strong>` : formatPriceWithCurrency(prod.price)}
       </td>
       <td>
         <span class="status-badge status-badge--${prod.active ? 'active' : 'hidden'}">
@@ -397,6 +396,24 @@ async function uploadImageToImgBB(file) {
   return resData.data.url;
 }
 
+// Auto-format price with default currency symbol (e.g., 42000 or 42,000 -> RS 42,000)
+function formatPriceWithCurrency(priceStr) {
+  if (!priceStr) return '';
+  let val = String(priceStr).trim();
+  if (!val) return '';
+
+  // If text without digits (e.g. "Price upon request")
+  if (!/\d/.test(val)) return val;
+
+  // Extract digits
+  const num = parseInt(val.replace(/[^\d]/g, ''), 10);
+  if (!isNaN(num) && num > 0) {
+    return `RS ${num.toLocaleString('en-IN')}`;
+  }
+
+  return val;
+}
+
 function setupProductModal() {
   dom.addProductBtn.addEventListener('click', () => openProductModal());
   
@@ -411,6 +428,18 @@ function setupProductModal() {
   dom.closeModalBtn.addEventListener('click', closeModal);
   dom.cancelProductBtn.addEventListener('click', closeModal);
 
+  // Auto-format prices on input blur
+  dom.productPrice.addEventListener('blur', () => {
+    if (dom.productPrice.value.trim()) {
+      dom.productPrice.value = formatPriceWithCurrency(dom.productPrice.value);
+    }
+  });
+  dom.productSalePrice.addEventListener('blur', () => {
+    if (dom.productSalePrice.value.trim()) {
+      dom.productSalePrice.value = formatPriceWithCurrency(dom.productSalePrice.value);
+    }
+  });
+
   // Submit product
   dom.productForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -418,12 +447,11 @@ function setupProductModal() {
 
     const prodId = dom.productId.value;
     const name = dom.productName.value.trim();
-    const price = dom.productPrice.value.trim();
-    const salePrice = dom.productSalePrice.value.trim() || "";
+    const price = formatPriceWithCurrency(dom.productPrice.value);
+    const salePrice = dom.productSalePrice.value.trim() ? formatPriceWithCurrency(dom.productSalePrice.value) : "";
     const stockCount = parseInt(dom.productStock.value, 10);
     const sizes = Array.from(document.querySelectorAll('input[name="product-sizes"]:checked')).map(el => el.value);
     const category = dom.productCategory.value;
-    const displayCategory = dom.productDisplayCategory.value.trim();
     const active = dom.productActive.checked;
     const isNewArrival = dom.productNewArrival.checked;
     let imageUrl = dom.productImageUrl.value;
@@ -441,7 +469,6 @@ function setupProductModal() {
         stockCount: isNaN(stockCount) ? 10 : stockCount,
         sizes,
         category,
-        displayCategory,
         active,
         isNewArrival,
         imageUrl,
@@ -483,11 +510,10 @@ async function openProductModal(prodId = null) {
 
     dom.productId.value = prod.id;
     dom.productName.value = prod.name;
-    dom.productPrice.value = prod.price;
-    dom.productSalePrice.value = prod.salePrice || '';
+    dom.productPrice.value = formatPriceWithCurrency(prod.price);
+    dom.productSalePrice.value = prod.salePrice ? formatPriceWithCurrency(prod.salePrice) : '';
     dom.productStock.value = prod.stockCount !== undefined ? prod.stockCount : 10;
     dom.productCategory.value = prod.category;
-    dom.productDisplayCategory.value = prod.displayCategory;
     dom.productActive.checked = prod.active;
     dom.productNewArrival.checked = !!prod.isNewArrival;
     dom.productImageUrl.value = prod.imageUrl || '';
@@ -763,7 +789,12 @@ async function fetchSiteContent() {
     if (dom.settingTimerShow) dom.settingTimerShow.checked = !!data.show;
     if (dom.settingTimerLabel) dom.settingTimerLabel.value = data.label || '';
     if (dom.settingTimerHeadline) dom.settingTimerHeadline.value = data.headline || '';
-    if (dom.settingTimerEnd) dom.settingTimerEnd.value = data.targetDate || '';
+    if (data.targetDate) {
+      dom.settingTimerEnd.value = data.targetDate;
+    }
+    if (data.postTimerText !== undefined) {
+      dom.settingTimerPostText.value = data.postTimerText;
+    }
   }
 
   // 2. Fetch About content
@@ -867,17 +898,14 @@ function setupSettingsHandlers() {
     dom.timerSettingsForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       showLoading();
-      const show = dom.settingTimerShow.checked;
-      const label = dom.settingTimerLabel.value.trim();
-      const headline = dom.settingTimerHeadline.value.trim();
-      const targetDate = dom.settingTimerEnd.value;
-
+      
       try {
         await setDoc(doc(db, 'settings', 'timer'), {
-          show,
-          label,
-          headline,
-          targetDate,
+          show: dom.settingTimerShow.checked,
+          label: dom.settingTimerLabel.value.trim(),
+          headline: dom.settingTimerHeadline.value.trim(),
+          targetDate: dom.settingTimerEnd.value,
+          postTimerText: dom.settingTimerPostText.value.trim(),
           updatedAt: Date.now()
         });
         showAlert("Timer settings saved successfully!");
